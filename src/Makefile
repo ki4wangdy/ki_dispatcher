@@ -100,7 +100,7 @@ ifeq ($(platform), maemo_linux)
     libs := -lpthread -lrt
 endif
 ifeq ($(platform), linux)
-    libs := -lzmq -libmemcached
+    libs := -lzmq -lmemcached
 endif
 ifeq ($(platform), win32)
     libs := -lws2_32
