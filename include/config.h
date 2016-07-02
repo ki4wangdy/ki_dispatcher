@@ -21,6 +21,11 @@ typedef struct config_st{
 	
 	int32_t imserver_ip[buf_max_size];
 	int8_t schat_topic[buf_max_size];
+
 }*config_t;
+
+config_t config_init();
+
+void config_destory(config_t);
 
 #endif
