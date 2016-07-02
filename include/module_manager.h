@@ -2,6 +2,8 @@
 #ifndef _MODULE_MANAGER_H_
 #define _MODULE_MANAGER_H_
 
+#include "platform.h"
+
 typedef struct module_manager_st{
 	pthread_mutex_t lock;
 	hash_table_t hash;
