@@ -39,7 +39,7 @@ srcs :=
 srcs += chash.c  
 srcs += config.c  
 srcs += daemon.c  
-#srcs += main.c  
+srcs += main.c  
 srcs += memcacheq.c  
 srcs += module.c  
 srcs += module_imserver.c  
@@ -120,7 +120,7 @@ ifeq ($(platform), maemo_linux)
     libs := -lpthread -lrt
 endif
 ifeq ($(platform), linux)
-    libs := -lpthread -lrt
+    libs := -lzmq -libmemcached
 endif
 ifeq ($(platform), win32)
     libs := -lws2_32
