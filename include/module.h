@@ -8,11 +8,11 @@
 #define module_flag_mutil_chat		"mchat"
 
 typedef struct module_st{
-	void (*module_init)(module_manager_t),
-	void (*module_start)(),
-	void (*module_notify_pull)(),
-	void (*module_pull_process)(int8_t*),
-	void (*module_push_process)(int8_t*),
+	void (*module_init)(module_manager_t);
+	void (*module_start)();
+	void (*module_notify_pull)();
+	void (*module_pull_process)(int8_t*);
+	void (*module_push_process)(int8_t*);
 	void (*module_destory)();
 }*module_t;
 
