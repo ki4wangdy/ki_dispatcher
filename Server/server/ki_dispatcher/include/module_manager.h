@@ -3,9 +3,8 @@
 #define _MODULE_MANAGER_H_
 
 #include "platform.h"
-
-struct hash_table ;
-struct config_st;
+#include "chash.h"
+#include "config.h"
 
 typedef struct module_manager_st{
 	pthread_mutex_t lock;
