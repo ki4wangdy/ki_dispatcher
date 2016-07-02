@@ -28,8 +28,6 @@ typedef unsigned long long	uint64_t;
 #define r_free		free
 
 typedef struct module_manager_st module_manager_t;
-typedef struct config_st config_t;
-typedef struct module_st module_t;
 
 #endif
 
