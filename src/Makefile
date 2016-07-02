@@ -19,7 +19,7 @@ platform := linux
 #    release
 build_config := debug
 
-name := libutil
+name := ki_dispatcher
 
 so_name := 1
 
@@ -36,24 +36,15 @@ endif
 
 #Sources
 srcs :=
-srcs += base64.c  
-srcs += datetime.c  
-srcs += hex.c     
-srcs += jqueue.c   
-srcs += log.c  
-srcs += pool.c  
-srcs += str.c      
-srcs += xmlnad.c
+srcs += chash.c  
 srcs += config.c  
-srcs += hash.c      
-srcs += inaddr.c  
-srcs += jsignal.c  
-srcs += md5.c  
-srcs += sha.c   
-srcs += strpool.c
-srcs += getopt.c
-srcs += bt.c
-srcs += chash.c
+srcs += daemon.c  
+srcs += main.c  
+srcs += memcacheq.c  
+srcs += module.c  
+srcs += module_imserver.c  
+srcs += module_manager.c  
+srcs += module_schat.c
 
 #defines := -DHAVE_CONFIG_H
 
