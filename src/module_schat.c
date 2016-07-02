@@ -41,7 +41,7 @@ static void module_schat_init(module_manager_t manager){
 
 	module_schat_instance->fd = memcacheq_init(manager->config->memcacheq_server,
 		manager->config->memcacheq_port);
-	assert(fd > 0);
+	assert(module_schat_instance->fd > 0);
 
 	module_schat_instance->status = status_none;
 	module_schat_instance->is_continue = true;
@@ -59,7 +59,7 @@ static void* pthread_run_pull(void* arg){
 	while(imserver->is_continue){
 		s = zmq_recv(imserver->pull_socket,imserver->pull_buf,schat_buf_size,0);
 		zmq_send(imserver->pull_socket,buf,strlen(buf),0);
-		if(s >= imserver_buf_size){
+		if(s >= schat_buf_size){
 			fprintf(stderr,"error to pull, the size is so big ! \n");
 			assert(0);
 		}
