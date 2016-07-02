@@ -7,8 +7,8 @@
 
 typedef struct module_manager_st{
 	pthread_mutex_t lock;
-	struct hash_table hash;
-	struct config_st config;
+	struct hash_table* hash;
+	struct config_st* config;
 	void* zmq_context;
 };
 
