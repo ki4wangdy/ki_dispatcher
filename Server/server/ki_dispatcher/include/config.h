@@ -6,7 +6,7 @@
 
 #include "platform.h"
 
-typedef struct config_st{
+struct config_st{
 
 	// module_im_server push ip and pull ip
 	int8_t imserver_push_ip_addr[buf_max_size];
@@ -22,7 +22,7 @@ typedef struct config_st{
 	int8_t imserver_ip[buf_max_size];
 	int8_t schat_topic[buf_max_size];
 
-}*config_t;
+};
 
 config_t config_init();
 

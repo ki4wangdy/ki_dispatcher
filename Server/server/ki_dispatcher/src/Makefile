@@ -91,6 +91,8 @@ ifeq ($(platform), win32cross)
     include_dirs :=
 endif
 
+libs_dir := -L/ki/install/lib
+
 #============================
 #  Libs and lib directories
 #============================

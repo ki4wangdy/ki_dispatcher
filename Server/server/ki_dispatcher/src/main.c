@@ -9,8 +9,6 @@ int main(int argc, char** argv){
 	// init the config
 	config_t t = init_config();
 
-
-
 	// destory the config
 	config_destory(t);
 
