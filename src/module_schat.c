@@ -31,6 +31,7 @@ typedef struct module_schat_st{
 }*module_schat_t;
 
 static module_schat_t module_schat_instance;
+static module_t module_instance;
 
 static void module_schat_init(module_manager_t manager){
 	module_schat_instance = r_calloc(1,sizeof(struct module_schat_st));
@@ -46,7 +47,7 @@ static void module_schat_init(module_manager_t manager){
 	module_schat_instance->status = status_none;
 	module_schat_instance->is_continue = true;
 
-	module_manager_add_module(manager,module_flag_single_chat,module_schat_instance);
+	module_manager_add_module(manager,module_flag_single_chat,module_instance);
 }
 
 static void* pthread_run_pull(void* arg){
@@ -184,7 +185,7 @@ static void module_schat_destory(){
 }
 
 module_t module_schat_inits(module_manager_t manager){
-	static struct module_st instance = {
+	module_instance = {
 		module_schat_init,
 		module_schat_start,
 		module_schat_notify,

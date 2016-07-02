@@ -32,6 +32,7 @@ typedef struct module_imserver_st{
 }*module_imserver_t;
 
 static module_imserver_t module_imserver_instance;
+static module_t imserver_module;
 
 static void module_imserver_init(module_manager_t manager){
 
@@ -48,7 +49,7 @@ static void module_imserver_init(module_manager_t manager){
 	module_imserver_instance->status = status_none;
 	module_imserver_instance->is_continue = true;
 
-	module_manager_add_module(manager,module_flag_imserver,module_imserver_instance);
+	module_manager_add_module(manager,module_flag_imserver,imserver_module);
 }
 
 static void module_imserver_pull_process(int8_t* data){
@@ -150,11 +151,11 @@ static void module_imserver_start(){
 
 	int s = 0;
 	pthread_t pull_pthread;
-	s = pthread_create(&pull_pthread,pthread_run_pull,module_imserver_instance);
+	s = pthread_create(&pull_pthread,NULL,pthread_run_pull,module_imserver_instance);
 	assert(s == 0);
 
 	pthread_t push_pthread;
-	s = pthread_create(&push_pthread,pthread_run_push,module_imserver_instance);
+	s = pthread_create(&push_pthread,NULL,pthread_run_push,module_imserver_instance);
 	assert(s == 0);
 
 }
@@ -186,7 +187,7 @@ static void module_imserver_destory(){
 }
 
 module_t module_imserver_inits(module_manager_t manager){
-	static struct module_st imserver_module = {
+	imserver_module = {
 		module_imserver_init,
 		module_imserver_start,
 		module_imserver_notify,
