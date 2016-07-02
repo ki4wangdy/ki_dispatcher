@@ -19,6 +19,7 @@ config_t config_init(){
 
 	// init the imserver ip
 	strcpy(t->imserver_ip,"127.0.0.1");
+	t->memcacheq_port = 11213;
 
 	// init the schat topic
 	strcpy(t->schat_topic,"schat_module");
