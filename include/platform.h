@@ -6,12 +6,22 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 
 #include <unistd.h>
 #include <sys/types.h>    
 #include <sys/stat.h>    
-#include <fcntl.h>
 
+#include <sys/socket.h>
+#include <sys/types.h>
+
+#include <fcntl.h>
+#include <errno.h>
+
+#include <netdb.h>
+#include <netinet/in.h>
+
+#include <arpa/inet.h>
 #include <pthread.h>
 #include <zmq.h>
 
@@ -19,5 +29,13 @@
 #include "platform.h"
 #include "daemon.h"
 #include "chash.h"
+#include "memcacheq.h"
+#include "config.h"
+
+#include "module.h"
+#include "module_manager.h"
+
+#include "module_imserver.h"
+#include "module_schat.h"
 
 #endif
