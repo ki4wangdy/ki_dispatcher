@@ -154,12 +154,12 @@ static void module_schat_notify(){
 	pthread_mutex_unlock(&schatServer->lock);
 }
 
-static void module_schat_push_process(int8_t* data){
+void module_schat_push_process(int8_t* data){
 	// just print the data
 	fprintf(stdout,"the push's data is %s\n",data);
 }
 
-static void module_schat_pull_process(int8_t* data){
+void module_schat_pull_process(int8_t* data){
 	// just print the data
 	fprintf(stdout,"the pull's data is %s\n",data);
 }
