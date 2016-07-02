@@ -22,5 +22,10 @@ typedef unsigned long long	uint64_t;
 #define ki_error	-1
 #define ki_ok		0
 
+#define r_calloc	calloc
+#define r_malloc	malloc
+#define r_realloc	realloc
+#define r_free		free
+
 #endif
 
