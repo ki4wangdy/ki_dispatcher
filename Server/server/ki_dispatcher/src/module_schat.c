@@ -6,7 +6,7 @@
 #define status_over		2
 
 #define schat_buf_size 512*1024
-#define schat_topic	20;
+#define schat_topic	20
 
 typedef struct module_schat_st{
 	// lock and cond for another notify 
@@ -99,8 +99,7 @@ static void* pthread_run_push(void* arg){
 	// get the memcache data
 	while(imserver->is_continue){
 		int len = 0;
-		int s = memcacheq_get(imserver->fd,imserver->module_manager->config->schat_topic,
-			&imserver->push_buf,&len);
+		int s = memcacheq_get(imserver->fd,imserver->module_manager->config->schat_topic,&imserver->push_buf,&len);
 		// 1 for success 
 		if(s == 1){
 			// 1. process data
