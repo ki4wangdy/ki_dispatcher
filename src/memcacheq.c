@@ -1,5 +1,5 @@
 
-
+#include "platform.h"
 #include "memcacheq.h"
 
 int memcacheq_init(char* server, int port){
