@@ -7,7 +7,7 @@ int main(int argc, char** argv){
 	init_daemon();
 
 	// init the config
-	config_t t = init_config();
+	config_t t = config_init();
 
 	// destory the config
 	config_destory(t);
