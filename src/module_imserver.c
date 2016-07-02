@@ -72,7 +72,8 @@ static void* pthread_run_push(void* arg){
 	// get the memcache data
 	while(imserver->is_continue){
 		int len = 0;
-		int s = memcacheq_get(imserver->fd,imserver->module_manager->config->imserver_ip,&imserver->push_buf,&len);
+		int s = memcacheq_get(imserver->fd,imserver->module_manager->config->imserver_ip,
+			&imserver->push_buf,&len);
 		// 1 for success 
 		if(s == 1){
 			// 1. process data
@@ -195,5 +196,5 @@ module_t module_imserver_inits(module_manager_t manager){
 		module_imserver_destory
 	};
 	module_manager_add_module(manager,module_flag_imserver,&imserver_module);
-	return &imserver_module
+	return &imserver_module;
 }
