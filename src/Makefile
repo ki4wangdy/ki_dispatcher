@@ -37,7 +37,7 @@ endif
 #Sources
 srcs :=
 srcs += chash.c  
-#srcs += config.c  
+srcs += config.c  
 #srcs += daemon.c  
 #srcs += main.c  
 #srcs += memcacheq.c  
