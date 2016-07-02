@@ -21,19 +21,6 @@ build_config := debug
 
 name := ki_dispatcher
 
-so_name := 1
-
-ifeq ($(platform), linux)
-    name := $(name).so
-endif
-ifeq ($(platform), win32)
-    name := $(name).dll
-endif
-ifeq ($(platform), win32cross)
-    name := $(name).dll
-endif
-
-
 #Sources
 srcs :=
 srcs += chash.c  
@@ -56,8 +43,6 @@ ifeq ($(platform), maemo_linux)
     defines += -DM_MAEMO
 endif
 
-
-
 #compiler_flags := -Wall #enable all warnings
 #compiler_flags += -Wno-comment #no warnings on nested comments
 #compiler_flags += -funsigned-char #the 'char' type is unsigned
@@ -71,8 +56,6 @@ endif
                 #-O3 -funroll-loops -fomit-frame-pointer
 #compiler_flags += -std=c++0x
 
-
-
 ifeq ($(platform), linux)
     compiler_flags += -fPIC # Since we are building shared library, we need Position-Independend Code
 endif
@@ -80,8 +63,7 @@ ifeq ($(platform), maemo_linux)
     compiler_flags += -fPIC # Since we are building shared library, we need Position-Independend Code
 endif
 
-
-linker_flags := -shared
+linker_flags := 
 
 ifeq ($(platform), linux)
     linker_flags += -Wl,-soname,$(name).$(so_name)
@@ -92,8 +74,6 @@ endif
 ifeq ($(platform), win32cross)
     linker_flags +=
 endif
-
-
 
 #=======================
 #  Include directories
@@ -111,8 +91,6 @@ ifeq ($(platform), win32cross)
     include_dirs :=
 endif
 
-
-
 #============================
 #  Libs and lib directories
 #============================
@@ -129,11 +107,7 @@ ifeq ($(platform), win32cross)
     libs :=
 endif
 
-
-
 remove_on_clean:=
-
-
 
 #                     __
 #                    /  \__/  end of configuration part
@@ -170,15 +144,7 @@ endif
 #find all .cpp files and get an .o file name for it to get dependancies for this target
 $(name): $(addprefix $(obj_dir)/,$(patsubst %.c,%.o,$(srcs)))
 	@echo Linking $@...
-ifeq ($(platform), win32)
-	@ar cr $(patsubst %.dll,%.a,$@) $^
-	@$(compiler) $^ -o "$@" $(libs) $(linker_flags)
-else
-	@ar cr $(patsubst %.so,%.a,$@) $^
-	@$(compiler) $^ -o "$@".$(so_name) $(libs) $(linker_flags)
-	@ln -f -s $@.$(so_name) $@
-endif
-
+	@$(compiler) $^ -o $(name) $(libs_dir) $(libs) $(linker_flags)
 
 #======================
 #=compile .cpp sources=
@@ -221,7 +187,7 @@ ifeq ($(platform),win32)
 else
 	@$(remove) $(name)
 	@$(remove) $(patsubst %.so,%.a,$(name))
-	@$(remove) $(name).$(so_name)
+	@$(remove) $(name)
 	@$(remove) -rf *.o
 	@$(remove) -rf *.d
 	@$(remove) -rf $(remove_on_clean)
