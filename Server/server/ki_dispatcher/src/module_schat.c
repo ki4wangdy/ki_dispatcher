@@ -179,7 +179,7 @@ static void module_schat_destory(){
 	zmq_close(module_schat_instance->push_socket);
 	zmq_close(module_schat_instance->pull_socket);
 
-	s_free(module_schat_instance);
+	r_free(module_schat_instance);
 	module_schat_instance = NULL;
 }
 

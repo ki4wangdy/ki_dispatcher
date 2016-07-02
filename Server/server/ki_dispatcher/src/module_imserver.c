@@ -182,7 +182,7 @@ static void module_imserver_destory(){
 	zmq_close(module_imserver_instance->push_socket);
 	zmq_close(module_imserver_instance->pull_socket);
 
-	s_free(module_imserver_instance);
+	r_free(module_imserver_instance);
 	module_imserver_instance = NULL;
 }
 

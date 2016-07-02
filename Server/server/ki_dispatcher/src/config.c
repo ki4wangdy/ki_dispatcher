@@ -28,5 +28,5 @@ config_t config_init(){
 }
 
 void config_destory(config_t t){
-	s_free(t);
+	r_free(t);
 }
