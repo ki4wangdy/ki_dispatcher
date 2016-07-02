@@ -185,7 +185,7 @@ static void module_schat_destory(){
 }
 
 module_t module_schat_inits(module_manager_t manager){
-	static struct module_schat_st instance = {
+	static struct module_st instance = {
 		module_schat_init,
 		module_schat_start,
 		module_schat_notify,

@@ -2,11 +2,9 @@
 #include "module_imserver.h"
 #include "platform.h"
 
-typedef enum{
-	status_none		=	0,
-	status_start	=	1,
-	status_over		=	2;
-}status_t;
+#define status_none		0
+#define status_start	1
+#define status_over		2
 
 #define imserver_buf_size 512*1024
 #define imserver_topic	20;
