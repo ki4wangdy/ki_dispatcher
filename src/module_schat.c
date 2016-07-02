@@ -25,9 +25,9 @@ typedef struct module_schat_st{
 	// pull server flag
 	int32_t is_continue;
 	// pull buf size
-	int32_t pull_buf[schat_buf_size];
+	int8_t pull_buf[schat_buf_size];
 	// push buf size
-	int32_t push_buf[schat_buf_size];
+	int8_t push_buf[schat_buf_size];
 }*module_schat_t;
 
 static module_schat_t module_schat_instance;
@@ -139,11 +139,11 @@ static void module_schat_start(){
 
 	int s = 0;
 	pthread_t pull_pthread;
-	s = pthread_create(&pull_pthread,pthread_run_pull,module_schat_instance);
+	s = pthread_create(&pull_pthread,NULL,pthread_run_pull,module_schat_instance);
 	assert(s == 0);
 
 	pthread_t push_pthread;
-	s = pthread_create(&push_pthread,pthread_run_push,module_schat_instance);
+	s = pthread_create(&push_pthread,NULL,pthread_run_push,module_schat_instance);
 	assert(s == 0);
 
 }

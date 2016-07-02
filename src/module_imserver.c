@@ -26,9 +26,9 @@ typedef struct module_imserver_st{
 	// pull server flag
 	int32_t is_continue;
 	// pull buf size
-	int32_t pull_buf[imserver_buf_size];
+	int8_t pull_buf[imserver_buf_size];
 	// push buf size
-	int32_t push_buf[imserver_buf_size];
+	int8_t push_buf[imserver_buf_size];
 }*module_imserver_t;
 
 static module_imserver_t module_imserver_instance;
