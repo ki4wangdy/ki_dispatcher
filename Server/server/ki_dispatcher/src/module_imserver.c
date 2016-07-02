@@ -195,8 +195,6 @@ module_t module_imserver_inits(module_manager_t manager){
 		module_imserver_push_process,
 		module_imserver_destory
 	};
-
 	module_manager_add_module(manager,module_flag_imserver,&imserver_module);
-
 	return &imserver_module
 }
