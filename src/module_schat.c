@@ -1,12 +1,9 @@
 
 #include "platform.h"
 
-
-typedef enum{
-	status_none		=	0,
-	status_start	=	1,
-	status_over		=	2;
-}schat_status_t;
+#define status_none		0
+#define status_start	1
+#define status_over		2
 
 #define schat_buf_size 512*1024
 #define schat_topic	20;
