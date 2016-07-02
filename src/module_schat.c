@@ -192,10 +192,8 @@ module_t module_schat_inits(module_manager_t manager){
 		module_schat_push_process,
 		module_schat_destory
 	};	
-
 	module_manager_add_module(manager,module_flag_single_chat,&module_instance);
-
-	return &instance;
+	return &module_instance;
 
 }
 
