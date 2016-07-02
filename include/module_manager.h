@@ -2,7 +2,6 @@
 #ifndef _MODULE_MANAGER_H_
 #define _MODULE_MANAGER_H_
 
-#include "platform.h"
 #include "chash.h"
 #include "config.h"
 
