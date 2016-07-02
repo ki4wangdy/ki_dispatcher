@@ -99,7 +99,7 @@ static void* pthread_run_push(void* arg){
 	while(imserver->is_continue){
 		int len = 0;
 		int s = memcacheq_get(imserver->fd,imserver->module_manager->config->schat_topic,
-			&imserver->push_buf,&len);
+			(char**)&imserver->push_buf,&len);
 		// 1 for success 
 		if(s == 1){
 			// 1. process data
