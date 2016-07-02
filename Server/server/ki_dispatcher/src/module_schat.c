@@ -6,7 +6,7 @@
 #define status_over		2
 
 #define schat_buf_size 512*1024
-#define schat_topic	20
+#define schat_topics	20
 
 typedef struct module_schat_st{
 	// lock and cond for another notify 
