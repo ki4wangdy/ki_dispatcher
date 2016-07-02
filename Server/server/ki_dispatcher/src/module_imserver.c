@@ -54,7 +54,7 @@ static void module_imserver_pull_process(int8_t* data){
 	fprintf(stdout,"the pull's data is %s\n",data);
 }
 
-static void module_imserver_push_process(int8_t* data)
+static void module_imserver_push_process(int8_t* data){
 	// just print the data
 	fprintf(stdout,"the push's data is %s\n",data);
 }
