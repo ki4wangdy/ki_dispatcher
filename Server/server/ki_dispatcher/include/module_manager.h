@@ -2,8 +2,8 @@
 #ifndef _MODULE_MANAGER_H_
 #define _MODULE_MANAGER_H_
 
-#include "chash.h"
-#include "config.h"
+#include <chash.h>
+#include <config.h>
 
 typedef struct module_manager_st{
 	pthread_mutex_t lock;
