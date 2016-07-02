@@ -49,6 +49,7 @@ static void module_schat_init(module_manager_t manager){
 	module_schat_instance->status = status_none;
 	module_schat_instance->is_continue = true;
 
+	module_manager_add_module(manager,module_flag_single_chat,module_schat_instance);
 }
 
 static void* pthread_run_pull(void* arg){

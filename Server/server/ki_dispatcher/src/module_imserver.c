@@ -50,6 +50,7 @@ static void module_imserver_init(module_manager_t manager){
 	module_imserver_instance->status = status_none;
 	module_imserver_instance->is_continue = true;
 
+	module_manager_add_module(manager,module_flag_imserver,module_imserver_instance);
 }
 
 static void module_imserver_pull_process(int8_t* data){
