@@ -1,7 +1,7 @@
 
 #include "config.h"
 
-init_config config_init(){
+config_t config_init(){
 
 	config_t t = r_calloc(1,sizeof(struct config_st));
 
