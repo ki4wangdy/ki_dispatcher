@@ -33,8 +33,6 @@ as that of the covered work.  */
 
 struct hash_table;
 
-typedef struct hash_table hash_table_t;
-
 struct hash_table *hash_table_new (int, unsigned long (*) (const void *),
 				   int (*) (const void *, const void *));
 void hash_table_destroy (struct hash_table *);
