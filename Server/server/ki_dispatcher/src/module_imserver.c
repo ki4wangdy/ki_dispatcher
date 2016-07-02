@@ -27,7 +27,7 @@ typedef struct module_imserver_st{
 	// pull buf size
 	int8_t pull_buf[imserver_buf_size];
 	// push buf size
-	int8_t push_buf[imserver_buf_size];
+	int8_t* push_buf;
 }*module_imserver_t;
 
 static module_imserver_t module_imserver_instance;
@@ -72,7 +72,7 @@ static void* pthread_run_push(void* arg){
 	// get the memcache data
 	while(imserver->is_continue){
 		int len = 0;
-		int s = memcacheq_get(imserver->fd,imserver->topic,&imserver->push_buf,&len);
+		int s = memcacheq_get(imserver->fd,imserver->module_manager->config->imserver_ip,&imserver->push_buf,&len);
 		// 1 for success 
 		if(s == 1){
 			// 1. process data
@@ -127,7 +127,7 @@ static void* pthread_run_pull(void* arg){
 		if(s > 0){
 			// 1.pull the data and process
 			imserver->pull_buf[s+1] = '\0';
-			module_imserver_pull_process(&imserver->pull_buf);
+			module_imserver_pull_process(imserver->pull_buf);
 			// 2. push the data to memcache cache
 			int sf = memcacheq_set(imserver->fd,imserver->module_manager->config->schat_topic,
 				imserver->pull_buf,s);
