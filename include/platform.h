@@ -15,4 +15,9 @@
 #include <pthread.h>
 #include <zmq.h>
 
+#include "type.h"
+#include "platform.h"
+#include "daemon.h"
+#include "chash.h"
+
 #endif
