@@ -11,7 +11,7 @@ typedef struct module_manager_st{
 	hash_table_t hash;
 	config_t config;
 	void* zmq_context;
-}*module_manager_t;
+};
 
 module_manager_t module_manager_init(config_t);
 void module_manager_destory(module_manager_t m);

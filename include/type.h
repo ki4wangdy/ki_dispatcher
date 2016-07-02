@@ -27,5 +27,7 @@ typedef unsigned long long	uint64_t;
 #define r_realloc	realloc
 #define r_free		free
 
+typedef struct module_manager_st module_manager_t;
+
 #endif
 
