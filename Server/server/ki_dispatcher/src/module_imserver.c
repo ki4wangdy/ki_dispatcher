@@ -81,7 +81,7 @@ static void* pthread_run_push(void* arg){
 			module_imserver_push_process(imserver->push_buf);
 			// 2. push the data to zmq
 			int fs = zmq_send(imserver->push_socket,imserver->push_buf,len,0);
-			s_free(imserver->push_buf);
+			r_free(imserver->push_buf);
 			imserver->push_buf = NULL;
 			if(fs != len){
 				fprintf(stderr,"pthread_run_push push data is error!\n");
