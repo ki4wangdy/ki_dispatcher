@@ -27,7 +27,7 @@ typedef struct module_schat_st{
 	// pull buf size
 	int8_t pull_buf[schat_buf_size];
 	// push buf size
-	int8_t push_buf[schat_buf_size];
+	int8_t* push_buf;
 }*module_schat_t;
 
 static module_schat_t module_schat_instance;
@@ -98,7 +98,8 @@ static void* pthread_run_push(void* arg){
 	// get the memcache data
 	while(imserver->is_continue){
 		int len = 0;
-		int s = memcacheq_get(imserver->fd,imserver->module_manager->config->schat_topic,&imserver->push_buf,&len);
+		int s = memcacheq_get(imserver->fd,imserver->module_manager->config->schat_topic,
+			&imserver->push_buf,&len);
 		// 1 for success 
 		if(s == 1){
 			// 1. process data
@@ -194,7 +195,7 @@ module_t module_schat_inits(module_manager_t manager){
 
 	module_manager_add_module(manager,module_flag_single_chat,&module_instance);
 
-	return instance;
+	return &instance;
 
 }
 
