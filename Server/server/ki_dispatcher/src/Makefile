@@ -44,7 +44,7 @@ srcs += memcacheq.c
 srcs += module.c  
 #srcs += module_imserver.c  
 #srcs += module_manager.c  
-#srcs += module_schat.c
+srcs += module_schat.c
 
 #defines := -DHAVE_CONFIG_H
 
