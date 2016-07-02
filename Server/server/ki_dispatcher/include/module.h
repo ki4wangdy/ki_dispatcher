@@ -9,8 +9,6 @@
 #define module_flag_single_chat		"schat"
 #define module_flag_mutil_chat		"mchat"
 
-struct module_st;
-
 typedef struct module_st{
 	void (*module_init)(module_manager_t);
 	void (*module_start)();
@@ -18,7 +16,7 @@ typedef struct module_st{
 	void (*module_pull_process)(int8_t*);
 	void (*module_push_process)(int8_t*);
 	void (*module_destory)();
-}*module_t;
+};
 
 void module_inits(module_manager_t manager);
 
