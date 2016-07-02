@@ -2,12 +2,12 @@
 #ifndef _MODULE_H_
 #define _MODULE_H_
 
+#include "platform.h"
+
 #define module_flag_imserver		"im_server"
 #define module_flag_router			"router"
 #define module_flag_single_chat		"schat"
 #define module_flag_mutil_chat		"mchat"
-
-#include "platform.h"
 
 typedef struct module_st{
 	void (*module_init)(module_manager_t);
