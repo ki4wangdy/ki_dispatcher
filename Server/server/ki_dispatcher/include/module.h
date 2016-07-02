@@ -16,7 +16,7 @@ typedef struct module_st{
 	void (*module_pull_process)(int8_t*);
 	void (*module_push_process)(int8_t*);
 	void (*module_destory)();
-}*module_t;
+};
 
 void module_inits(module_manager_t manager);
 
