@@ -1,5 +1,4 @@
 
-#include "module_imserver.h"
 #include "platform.h"
 
 #define status_none		0
@@ -43,7 +42,7 @@ static void module_imserver_init(module_manager_t manager){
 
 	module_imserver_instance->fd = memcacheq_init(manager->config->memcacheq_server,
 		manager->config->memcacheq_port);
-	assert(fd > 0);
+	assert(module_imserver_instance->fd > 0);
 
 	module_imserver_instance->status = status_none;
 	module_imserver_instance->is_continue = true;
