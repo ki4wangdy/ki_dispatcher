@@ -18,4 +18,6 @@ void module_manager_destory(module_manager_t m);
 void module_manager_notify(module_manager_t m, const char* module_flag);
 void module_manager_add_module(module_manager_t m, const char* module_flag, module_t module);
 
+void module_manager_start_all(module_manager_t manager);
+
 #endif
