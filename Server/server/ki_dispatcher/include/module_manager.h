@@ -20,4 +20,6 @@ void module_manager_add_module(module_manager_t m, const char* module_flag, modu
 
 void module_manager_start_all(module_manager_t manager);
 
+module_t module_manager_get_module(module_manager_t manager,char* module_flag);
+
 #endif
