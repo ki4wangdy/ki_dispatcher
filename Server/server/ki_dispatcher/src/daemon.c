@@ -34,11 +34,11 @@ int init_daemon(){
 		return false;
 	}
 
-	if (fd > STDERR_FILENO) {
-		if (close(fd) == -1) {
-			return false;
-		}
-	}
+// 	if (fd > STDERR_FILENO) {
+// 		if (close(fd) == -1) {
+// 			return false;
+// 		}
+// 	}
 	return true;
 }
 
