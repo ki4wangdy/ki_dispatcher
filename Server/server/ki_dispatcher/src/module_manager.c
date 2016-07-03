@@ -52,3 +52,8 @@ void module_manager_add_module(module_manager_t m, const char* module_flag, modu
 	assert(m != NULL);
 	hash_table_put(m->hash,module_flag,module);
 }
+
+void module_manager_start_all(module_manager_t manager){
+
+}
+
