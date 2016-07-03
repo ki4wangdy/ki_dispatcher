@@ -78,7 +78,10 @@ static void* pthread_run_push(void* arg){
 		if(s == 1){
 			// 1. process data
 			imserver->push_buf[s+1] = '\0';
-			module_imserver_push_process(imserver->push_buf);
+			module_t imserver_module = module_manager_get_module(imserver->module_manager,module_flag_imserver);
+			if(imserver_module != NULL){
+				imserver_module->module_push_process(imserver->push_buf);
+			}
 			// 2. push the data to zmq
 			int fs = zmq_send(imserver->push_socket,imserver->push_buf,len,0);
 			r_free(imserver->push_buf);
@@ -128,7 +131,10 @@ static void* pthread_run_pull(void* arg){
 		if(s > 0){
 			// 1.pull the data and process
 			imserver->pull_buf[s+1] = '\0';
-			module_imserver_pull_process(imserver->pull_buf);
+			module_t imserver_module = module_manager_get_module(imserver->module_manager,module_flag_imserver);
+			if(imserver_module != NULL){
+				imserver_module->module_pull_process(imserver->pull_buf);
+			}
 			// 2. push the data to memcache cache
 			int sf = memcacheq_set(imserver->fd,imserver->module_manager->config->schat_topic,
 				imserver->pull_buf,s);
