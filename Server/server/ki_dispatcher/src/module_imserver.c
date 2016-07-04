@@ -93,8 +93,6 @@ static void* pthread_run_push(void* arg){
 				fprintf(stdout,"pthread_run_push pull data is error!\n");
 				assert(0);
 			}
-			// 4.notify other module to get data from memcache queue
-			module_manager_notify(imserver->module_manager, module_flag_single_chat);
 		} 
 		// s for nothing , so wait
 		else if(s == 0){
