@@ -5,7 +5,7 @@ module_manager_t module_manager_init(config_t config){
 
 	module_manager_t m = r_calloc(1,sizeof(struct module_manager_st));
 	m->config = config;
-	m->hash = hash_table_new(10,NULL,NULL);
+	m->hash = make_nocase_string_hash_table(10);
 	pthread_mutex_init(&m->lock,NULL);
 	m->zmq_context = zmq_ctx_new();
 	return m;
