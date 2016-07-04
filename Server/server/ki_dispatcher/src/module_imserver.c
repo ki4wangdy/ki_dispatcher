@@ -60,7 +60,7 @@ static void module_imserver_push_process(int8_t* data){
 }
 
 static void* pthread_run_push(void* arg){
-	module_imserver_t imserver = (module_imserver_t)arg;
+	module_imserver_t imserver = (module_imserver_t)module_imserver_instance;
 	imserver->push_socket = zmq_socket(imserver->module_manager->zmq_context,ZMQ_REQ);
 	int s = zmq_connect(imserver->push_socket,imserver->module_manager->config->imserver_push_ip_addr);
 	if(s != 0){
@@ -115,7 +115,7 @@ static void* pthread_run_push(void* arg){
 
 static void* pthread_run_pull(void* arg){
 
-	module_imserver_t imserver = (module_imserver_t)arg;
+	module_imserver_t imserver = (module_imserver_t)module_imserver_instance;
 	imserver->pull_socket = zmq_socket(imserver->module_manager->zmq_context,ZMQ_REP);
 	zmq_connect(imserver->pull_socket,imserver->module_manager->config->imserver_pull_ip_addr);
 
@@ -157,11 +157,11 @@ static void module_imserver_start(){
 
 	int s = 0;
 	pthread_t pull_pthread;
-	s = pthread_create(&pull_pthread,NULL,pthread_run_pull,module_imserver_instance);
+	s = pthread_create(&pull_pthread,NULL,pthread_run_pull,NULL);
 	assert(s == 0);
 
 	pthread_t push_pthread;
-	s = pthread_create(&push_pthread,NULL,pthread_run_push,module_imserver_instance);
+	s = pthread_create(&push_pthread,NULL,pthread_run_push,NULL);
 	assert(s == 0);
 
 }
