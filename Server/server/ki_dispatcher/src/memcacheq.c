@@ -64,8 +64,8 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 		return -1;
 	}
 
-	char buf[1024*10] = "";
-	snprintf(buf, 1024*10, "get %s\r\n", topic);
+	char buf[1024*512] = "";
+	snprintf(buf, 1024 * 512, "get %s\r\n", topic);
 
 	int temp_len = strlen(buf);
 	int s = write(fd, buf, temp_len);
@@ -74,7 +74,7 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 	}
 	assert(s == temp_len);
 
-	if ((nbytes = read(fd, buf, 1024*10)) == -1){
+	if ((nbytes = read(fd, buf, 1024 * 512)) == -1){
 		fprintf(stderr, "Read Error:%s\n", strerror(errno));
 		return -1;
 	}
@@ -85,8 +85,8 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 		return 0;
 	}
 
-	char prefix[20] = "";
-	snprintf(prefix, 20, "VALUE %s 0 ", topic);
+	char prefix[100] = "";
+	snprintf(prefix, 100, "VALUE %s 0 ", topic);
 	int prefix_size = strlen(prefix);
 	if (nbytes <= prefix_size){
 		return -1;
