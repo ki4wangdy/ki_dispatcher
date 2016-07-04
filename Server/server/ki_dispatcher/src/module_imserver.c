@@ -28,6 +28,8 @@ typedef struct module_imserver_st{
 	int8_t pull_buf[imserver_buf_size];
 	// push buf size
 	int8_t* push_buf;
+	// imserver module
+	module_t module;
 }*module_imserver_t;
 
 static module_imserver_t module_imserver_instance;
@@ -47,6 +49,8 @@ static void module_imserver_init(module_manager_t manager){
 	module_imserver_instance->status = status_none;
 	module_imserver_instance->is_continue = true;
 
+	module_imserver_instance->module = module_manager_get_module(module_imserver_instance->module_manager, 
+		module_flag_imserver);
 }
 
 static void module_imserver_pull_process(int8_t* data){
@@ -72,7 +76,7 @@ static void* pthread_run_push(void* arg){
 		if(s == 1){
 			// 1. process data
 			imserver->push_buf[s+1] = '\0';
-			module_t imserver_module = module_manager_get_module(imserver->module_manager,module_flag_imserver);
+			module_t imserver_module = module_imserver_instance->module;
 			if(imserver_module != NULL){
 				imserver_module->module_push_process(imserver->push_buf);
 			}
@@ -84,11 +88,13 @@ static void* pthread_run_push(void* arg){
 				fprintf(stderr,"pthread_run_push push data is error!\n");
 				assert(0);
 			}
-			int sf = zmq_recv(imserver->push_socket,temp,50,0);
+			int sf = zmq_recv(imserver->push_socket, imserver->pull_buf, imserver_buf_size, 0);
 			if(sf <= 0){
 				fprintf(stdout,"pthread_run_push pull data is error!\n");
 				assert(0);
 			}
+			// 4.notify other module to get data from memcache queue
+			module_manager_notify(imserver->module_manager, module_flag_single_chat);
 		} 
 		// s for nothing , so wait
 		else if(s == 0){
@@ -125,7 +131,7 @@ static void* pthread_run_pull(void* arg){
 		if(s > 0){
 			// 1.pull the data and process
 			imserver->pull_buf[s+1] = '\0';
-			module_t imserver_module = module_manager_get_module(imserver->module_manager,module_flag_imserver);
+			module_t imserver_module = module_imserver_instance->module;
 			if(imserver_module != NULL){
 				imserver_module->module_pull_process(imserver->pull_buf);
 			}
