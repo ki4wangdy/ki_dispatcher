@@ -95,7 +95,8 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 	assert(s == temp_len);
 	if ((nbytes = read(fd, buf, 1024 * 512)) == -1){
 		fprintf(stderr, "Read Error:%s\n", strerror(errno));
-		return -1;
+		st = -1;
+		goto end;
 	}
 	buf[nbytes] = '\0';
 	char r[] = "END\r\n";
@@ -134,6 +135,7 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 	*value = result;
 
 end:
+	pthread_mutex_unlock(&lock);
 	return st;
 
 }
