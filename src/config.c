@@ -19,7 +19,6 @@ config_t config_init(){
 
 	// init the imserver ip
 	strcpy(t->imserver_ip,"121.42.207.163");
-	t->memcacheq_port = 11213;
 
 	// init the memcacheq ip
 	strcpy(t->memcacheq_server, "121.42.207.163");
