@@ -5,10 +5,12 @@ void module_inits(module_manager_t manager){
 
 	// 1. register the im server module
 	module_t imserver = module_imserver_inits(manager);
-	module_manager_add_module(manager,module_flag_imserver,imserver);
+	module_manager_add_module(manager, module_flag_imserver, imserver);
+	imserver->module_init(manager);
 
 	// 2. register the schat module 
 	module_t schat = module_schat_inits(manager);
-	module_manager_add_module(manager,module_flag_single_chat,schat);
+	module_manager_add_module(manager, module_flag_single_chat, schat);
+	schat->module_init(manager);
 
 }
