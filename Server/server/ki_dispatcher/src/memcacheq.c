@@ -76,10 +76,10 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 
 	pthread_mutex_lock(&lock);
 
-	int s = -1;
+	int st = 1;
 	int nbytes = 0;
 	if (fd == 0){
-		s = -1;
+		st = -1;
 		goto end;
 	}
 
@@ -89,7 +89,7 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 	int temp_len = strlen(buf);
 	int s = write(fd, buf, temp_len);
 	if (s <= 0){
-		s = -1;
+		st = -1;
 		goto end;
 	}
 	assert(s == temp_len);
@@ -100,7 +100,7 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 	buf[nbytes] = '\0';
 	char r[] = "END\r\n";
 	if (memcmp(buf,r,sizeof(r)-1) == 0){
-		s = 0;
+		st = 0;
 		goto end;
 	}
 
@@ -108,7 +108,7 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 	snprintf(prefix, 100, "VALUE %s 0 ", topic);
 	int prefix_size = strlen(prefix);
 	if (nbytes <= prefix_size){
-		s = -1;
+		st = -1;
 		goto end;
 	}
 
@@ -134,7 +134,7 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 	*value = result;
 
 end:
-	return 1;
+	return st;
 
 }
 
