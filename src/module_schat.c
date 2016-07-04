@@ -89,7 +89,7 @@ static void* pthread_run_push(void* arg){
 			if (imserver_module != NULL){
 				imserver_module->module_pull_process(imserver->pull_buf);
 			}
-			sf = memcacheq_set(imserver->fd, imserver->module_manager->config->schat_topic,
+			sf = memcacheq_set(imserver->fd, imserver->module_manager->config->imserver_ip,
 				imserver->pull_buf, s);
 			if (sf <= 0){
 				fprintf(stderr, "pthread_run_pull memcacheq set error!\n");
@@ -116,12 +116,10 @@ static void* pthread_run_push(void* arg){
 }
 
 static void module_schat_start(){
-
 	int s = 0;
 	pthread_t push_pthread;
 	s = pthread_create(&push_pthread,NULL,pthread_run_push,NULL);
 	assert(s == 0);
-
 }
 
 static void module_schat_notify(){
