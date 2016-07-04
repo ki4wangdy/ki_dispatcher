@@ -4,7 +4,11 @@
 int main(int argc, char** argv){
 
 	// init the process , start another process
-	init_daemon();
+	int result = init_daemon();
+	if (!result){
+		fprintf(stderr, "init_daemon is error!\n");
+		assert(0);
+	}
 
 	// init the config
 	config_t t = config_init();
