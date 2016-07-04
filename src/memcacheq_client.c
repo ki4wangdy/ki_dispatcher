@@ -11,7 +11,7 @@ int memcacheq_init(char* server, int port){
 	memcached_return rc;
 	memcached_server_st* servers = NULL;
 	memc = memcached_create(NULL);
-	servers = memcached_server_list_append(server, server, port, &rc);
+	servers = memcached_server_list_append(servers, server, port, &rc);
 	rc = memcached_server_push(memc, servers);
 
 	if (MEMCACHED_SUCCESS != rc){
