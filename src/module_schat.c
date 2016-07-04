@@ -28,6 +28,8 @@ typedef struct module_schat_st{
 	int8_t pull_buf[schat_buf_size];
 	// push buf size
 	int8_t* push_buf;
+	// schat module
+	module_t module;
 }*module_schat_t;
 
 static module_schat_t module_schat_instance;
@@ -46,45 +48,9 @@ static void module_schat_init(module_manager_t manager){
 	module_schat_instance->status = status_none;
 	module_schat_instance->is_continue = true;
 
-}
+	module_schat_instance->module = module_manager_get_module(module_schat_instance->module_manager, 
+		module_flag_single_chat);
 
-static void* pthread_run_pull(void* arg){
-	module_schat_t imserver = (module_schat_t)module_schat_instance;
-	imserver->pull_socket = zmq_socket(imserver->module_manager->zmq_context,ZMQ_REP);
-	zmq_connect(imserver->pull_socket,imserver->module_manager->config->schat_pull_ip_addr);
-
-	int8_t s = 0;
-	char buf[] = "ack";
-	while(imserver->is_continue){
-		s = zmq_recv(imserver->pull_socket,imserver->pull_buf,schat_buf_size,0);
-		zmq_send(imserver->pull_socket,buf,strlen(buf),0);
-		if(s >= schat_buf_size){
-			fprintf(stderr,"error to pull, the size is so big ! \n");
-			assert(0);
-		}
-		if(s > 0){
-			// 1.pull the data and process
-			imserver->pull_buf[s+1] = '\0';
-			module_t imserver_module = module_manager_get_module(imserver->module_manager,module_flag_single_chat);
-			if(imserver_module != NULL){
-				imserver_module->module_pull_process(imserver->pull_buf);
-			}
-			// 2. push the data to memcache cache
-			int sf = memcacheq_set(imserver->fd,imserver->module_manager->config->imserver_ip,
-				imserver->pull_buf,s);
-			if(sf <= 0){
-				fprintf(stderr,"pthread_run_pull memcacheq set error!\n");
-				assert(0);
-			}
-			// 3.notify other module to get data from memcache queue
-			module_manager_notify(imserver->module_manager,module_flag_imserver);
-			continue;
-		}
-		fprintf(stderr,"zmq pull's size is <= 0 ! \n");
-	}
-
-	pthread_detach(pthread_self());
-	return NULL;
 }
 
 static void* pthread_run_push(void* arg){
@@ -103,7 +69,7 @@ static void* pthread_run_push(void* arg){
 		if(s == 1){
 			// 1. process data
 			imserver->push_buf[s+1] = '\0';
-			module_t imserver_module = module_manager_get_module(imserver->module_manager,module_flag_single_chat);
+			module_t imserver_module = module_schat_instance->module;
 			if(imserver_module != NULL){
 				imserver_module->module_push_process(imserver->push_buf);
 			}
@@ -113,11 +79,24 @@ static void* pthread_run_push(void* arg){
 				fprintf(stderr,"pthread_run_push push data is error!\n");
 				assert(0);
 			}
-			int sf = zmq_recv(imserver->push_socket,temp,50,0);
+			int sf = zmq_recv(imserver->push_socket, imserver->pull_buf, schat_buf_size, 0);
 			if(sf <= 0){
 				fprintf(stdout,"pthread_run_push pull data is error!\n");
 				assert(0);
 			}
+			// 3. get the data and push to memcacheq 
+			imserver->pull_buf[sf + 1] = '\0';
+			if (imserver_module != NULL){
+				imserver_module->module_pull_process(imserver->pull_buf);
+			}
+			sf = memcacheq_set(imserver->fd, imserver->module_manager->config->schat_topic,
+				imserver->pull_buf, s);
+			if (sf <= 0){
+				fprintf(stderr, "pthread_run_pull memcacheq set error!\n");
+				assert(0);
+			}
+			// 4.notify other module to get data from memcache queue
+			module_manager_notify(imserver->module_manager, module_flag_imserver);
 		} 
 		// s for nothing , so wait
 		else if(s == 0){
@@ -139,10 +118,6 @@ static void* pthread_run_push(void* arg){
 static void module_schat_start(){
 
 	int s = 0;
-	pthread_t pull_pthread;
-	s = pthread_create(&pull_pthread,NULL,pthread_run_pull,NULL);
-	assert(s == 0);
-
 	pthread_t push_pthread;
 	s = pthread_create(&push_pthread,NULL,pthread_run_push,NULL);
 	assert(s == 0);
@@ -158,12 +133,10 @@ static void module_schat_notify(){
 
 static void module_schat_push_process(int8_t* data){
 	// just print the data
-	fprintf(stdout,"the push's data is %s\n",data);
 }
 
 static void module_schat_pull_process(int8_t* data){
 	// just print the data
-	fprintf(stdout,"the pull's data is %s\n",data);
 }
 
 static void module_schat_destory(){
