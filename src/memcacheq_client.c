@@ -9,15 +9,15 @@ static memcached_st* memc;
 // init the memcacheq 
 int memcacheq_init(char* server, int port){
 	memcached_return rc;
-	memcached_server_st* server = NULL;
+	memcached_server_st* servers = NULL;
 	memc = memcached_create(NULL);
-	server = memcached_server_list_append(server, server, port, &rc);
-	rc = memcached_server_push(memc, server);
+	servers = memcached_server_list_append(server, server, port, &rc);
+	rc = memcached_server_push(memc, servers);
 
 	if (MEMCACHED_SUCCESS != rc){
 		fprintf(stderr, "memcached_server_push failed!\n");
 	}
-	memcached_server_list_free(server);
+	memcached_server_list_free(servers);
 	return 4;
 }
 
