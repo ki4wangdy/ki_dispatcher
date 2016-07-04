@@ -91,11 +91,7 @@ static void* pthread_run_push(void* arg){
 
 	module_schat_t imserver = (module_schat_t)module_schat_instance;
 	imserver->push_socket = zmq_socket(imserver->module_manager->zmq_context,ZMQ_REQ);
-	int s = zmq_connect(imserver->push_socket,imserver->module_manager->config->schat_push_ip_addr);
-	if(s != 0){
-		fprintf(stderr,"pthread_run_push connect is error!\n");
-		assert(0);
-	}
+	zmq_connect(imserver->push_socket,imserver->module_manager->config->schat_push_ip_addr);
 
 	char temp[50] = ""; 
 	// get the memcache data
