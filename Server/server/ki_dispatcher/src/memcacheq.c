@@ -38,10 +38,10 @@ int memcacheq_set(int fd, char* topic, char* value, int value_len){
 
 	pthread_mutex_lock(&lock);
 
-	int s = -1;
+	int st = -1;
 	int nbytes = 0;
 	if (fd == 0){
-		s = -1;
+		st = -1;
 		goto end;
 	}
 
@@ -51,24 +51,24 @@ int memcacheq_set(int fd, char* topic, char* value, int value_len){
 	int len = strlen(buf);
 	int s = write(fd, buf, len);
 	if (s <= 0){
-		s = -1;
+		st = -1;
 		goto end;
 	}
 	assert(s == len);
 
 	if ((nbytes = read(fd, buf, 100)) == -1){
 		fprintf(stderr, "Read Error:%s\n", strerror(errno));
-		s = -1;
+		st = -1;
 		goto end;
 	}
 	buf[nbytes] = '\0';
 	if (strstr(buf,"STORED") != 0){
-		s = 1;
+		st = 1;
 	}
 
 end:
 	pthread_mutex_unlock(&lock);
-	return s ;
+	return st ;
 }
 
 // if the return value is false, then the topic queue has no message
