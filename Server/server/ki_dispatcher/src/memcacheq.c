@@ -2,7 +2,12 @@
 #include "platform.h"
 #include "memcacheq.h"
 
+static pthread_mutex_t lock;
+
 int memcacheq_init(char* server, int port){
+
+	pthread_mutex_init(&lock, NULL);
+
 	int sockfd;
 	struct sockaddr_in server_addr;
 	struct hostent *host;
@@ -30,9 +35,14 @@ int memcacheq_init(char* server, int port){
 
 // if the return value is true, the set handle is success
 int memcacheq_set(int fd, char* topic, char* value, int value_len){
+
+	pthread_mutex_lock(&lock);
+
+	int s = -1;
 	int nbytes = 0;
 	if (fd == 0){
-		return -1;
+		s = -1;
+		goto end;
 	}
 
 	char buf[1024*10] = "";
@@ -41,27 +51,36 @@ int memcacheq_set(int fd, char* topic, char* value, int value_len){
 	int len = strlen(buf);
 	int s = write(fd, buf, len);
 	if (s <= 0){
-		return -1;
+		s = -1;
+		goto end;
 	}
 	assert(s == len);
 
 	if ((nbytes = read(fd, buf, 100)) == -1){
 		fprintf(stderr, "Read Error:%s\n", strerror(errno));
-		return -1;
+		s = -1;
+		goto end;
 	}
 	buf[nbytes] = '\0';
-
 	if (strstr(buf,"STORED") != 0){
-		return 1;
+		s = 1;
 	}
-	return -1;
+
+end:
+	pthread_mutex_unlock(&lock);
+	return s ;
 }
 
 // if the return value is false, then the topic queue has no message
 int memcacheq_get(int fd, char* topic, char** value, int* len){
+
+	pthread_mutex_lock(&lock);
+
+	int s = -1;
 	int nbytes = 0;
 	if (fd == 0){
-		return -1;
+		s = -1;
+		goto end;
 	}
 
 	char buf[1024*512] = "";
@@ -70,26 +89,27 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 	int temp_len = strlen(buf);
 	int s = write(fd, buf, temp_len);
 	if (s <= 0){
-		return -1;
+		s = -1;
+		goto end;
 	}
 	assert(s == temp_len);
-
 	if ((nbytes = read(fd, buf, 1024 * 512)) == -1){
 		fprintf(stderr, "Read Error:%s\n", strerror(errno));
 		return -1;
 	}
 	buf[nbytes] = '\0';
-
 	char r[] = "END\r\n";
 	if (memcmp(buf,r,sizeof(r)-1) == 0){
-		return 0;
+		s = 0;
+		goto end;
 	}
 
 	char prefix[100] = "";
 	snprintf(prefix, 100, "VALUE %s 0 ", topic);
 	int prefix_size = strlen(prefix);
 	if (nbytes <= prefix_size){
-		return -1;
+		s = -1;
+		goto end;
 	}
 
 	int i = prefix_size + 1;
@@ -113,6 +133,7 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 	memcpy(result, temps, size);
 	*value = result;
 
+end:
 	return 1;
 
 }
@@ -122,5 +143,6 @@ int memcacheq_close(int fd){
 		return 0;
 	}
 	close(fd);
+	pthread_mutex_destroy(&lock);
 }
 
