@@ -115,7 +115,7 @@ static void* pthread_run_pull(void* arg){
 	imserver->pull_socket = zmq_socket(imserver->module_manager->zmq_context,ZMQ_REP);
 	zmq_connect(imserver->pull_socket,imserver->module_manager->config->imserver_pull_ip_addr);
 
-	int8_t s = 0;
+	int32_t s = 0;
 	char buf[] = "ack";
 	while(imserver->is_continue){
 		s = zmq_recv(imserver->pull_socket,imserver->pull_buf,imserver_buf_size,0);
