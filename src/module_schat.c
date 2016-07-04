@@ -131,10 +131,12 @@ static void module_schat_notify(){
 
 static void module_schat_push_process(int8_t* data){
 	// just print the data
+	fprintf(stdout, "module_schat_push_process:%s\n", data);
 }
 
 static void module_schat_pull_process(int8_t* data){
 	// just print the data
+	fprintf(stdout, "module_schat_pull_process:%s\n", data);
 }
 
 static void module_schat_destory(){
