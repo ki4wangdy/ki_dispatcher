@@ -39,11 +39,11 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 	memcached_return rc;
 	int value_length;
 	char* rvalue = memcached_get(memc, topic, strlen(topic), &value_length, &flags, &rc);
-	*value = rvalue;
-	*len = value_length;
-	if (len == 0 || strcmp(rvalue,"") == 0){
+	if (rvalue == NULL || len == 0){
 		return 0;
 	}
+	*value = rvalue;
+	*len = value_length;
 	return rc == MEMCACHED_SUCCESS ? 1 : -1;
 }
 
