@@ -26,7 +26,7 @@ int memcacheq_init(char* server, int port){
 int memcacheq_set(int fd, char* topic, char* value, int value_len){
 	int32_t flags = 0;
 	memcached_return rc;
-	rc = memcached_set(memc, key, strlen(key), value, strlen(value), expiration, flags);
+	rc = memcached_set(memc, key, strlen(key), value, strlen(value), 0, flags);
 	return MEMCACHED_SUCCESS == rc ? 1 : -1;
 }
 
@@ -38,7 +38,7 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 	int32_t flags = 0;
 	memcached_return rc;
 	int value_length;
-	char* rvalue = memcached_get(memc, key, strlen(key), &value_length, &flags, &rc);
+	char* rvalue = memcached_get(memc, topic, strlen(topic), &value_length, &flags, &rc);
 	*value = rvalue;
 	*len = value_length;
 	if (len == 0 || strcmp(rvalue,"") == 0){
