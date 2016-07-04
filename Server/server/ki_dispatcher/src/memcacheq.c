@@ -2,11 +2,11 @@
 #include "platform.h"
 #include "memcacheq.h"
 
-//static pthread_mutex_t lock;
+static pthread_mutex_t lock;
 
 int memcacheq_init(char* server, int port){
 
-//	pthread_mutex_init(&lock, NULL);
+	pthread_mutex_init(&lock, NULL);
 
 	int sockfd;
 	struct sockaddr_in server_addr;
@@ -36,7 +36,7 @@ int memcacheq_init(char* server, int port){
 // if the return value is true, the set handle is success
 int memcacheq_set(int fd, char* topic, char* value, int value_len){
 
-//	pthread_mutex_lock(&lock);
+	pthread_mutex_lock(&lock);
 
 	int st = -1;
 	int nbytes = 0;
@@ -67,14 +67,14 @@ int memcacheq_set(int fd, char* topic, char* value, int value_len){
 	}
 
 end:
-//	pthread_mutex_unlock(&lock);
+	pthread_mutex_unlock(&lock);
 	return st ;
 }
 
 // if the return value is false, then the topic queue has no message
 int memcacheq_get(int fd, char* topic, char** value, int* len){
 
-//	pthread_mutex_lock(&lock);
+	pthread_mutex_lock(&lock);
 
 	int st = 1;
 	int nbytes = 0;
@@ -135,7 +135,7 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 	*value = result;
 
 end:
-//	pthread_mutex_unlock(&lock);
+	pthread_mutex_unlock(&lock);
 	return st;
 
 }
@@ -145,6 +145,6 @@ int memcacheq_close(int fd){
 		return 0;
 	}
 	close(fd);
-//	pthread_mutex_destroy(&lock);
+	pthread_mutex_destroy(&lock);
 }
 
