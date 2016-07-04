@@ -28,6 +28,7 @@ srcs += config.c
 srcs += daemon.c  
 srcs += main.c  
 srcs += memcacheq.c  
+#srcs += memcacheq_client.c
 srcs += module.c  
 srcs += module_imserver.c  
 srcs += module_manager.c  
