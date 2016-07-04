@@ -62,11 +62,7 @@ static void module_imserver_push_process(int8_t* data){
 static void* pthread_run_push(void* arg){
 	module_imserver_t imserver = (module_imserver_t)module_imserver_instance;
 	imserver->push_socket = zmq_socket(imserver->module_manager->zmq_context,ZMQ_REQ);
-	int s = zmq_connect(imserver->push_socket,imserver->module_manager->config->imserver_push_ip_addr);
-	if(s != 0){
-		fprintf(stderr,"pthread_run_push connect is error!\n");
-		assert(0);
-	}
+	zmq_connect(imserver->push_socket,imserver->module_manager->config->imserver_push_ip_addr);
 	
 	char temp[50] = ""; 
 	// get the memcache data
