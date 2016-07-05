@@ -52,7 +52,7 @@ endif
 #compiler_flags += -Werror #treat warnings as errors
 #compiler_flags += -Wfatal-errors # stop on first error encountered
 #compiler_flags += -fstrict-aliasing #strict aliasing (in order to comply with the c++ standard more strictly)
-#compiler_flags += -g #include debugging symbols
+compiler_flags += -g #include debugging symbols
                 #-P -E #-Wreorder
                 #-O3 -funroll-loops -fomit-frame-pointer
 #compiler_flags += -std=c++0x
