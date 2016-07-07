@@ -14,8 +14,10 @@ typedef struct module_imserver_st{
 	pthread_cond_t cond;
 	// module manager for notify other module
 	module_manager_t module_manager;
-	// cache
-	int32_t fd;
+	// push thread memcacheq fd
+	int32_t push_fd;
+	// pull thread memcacheq fd
+	int32_t pull_fd;
 	// push socket
 	void* push_socket;
 	// pull socket
@@ -42,9 +44,13 @@ static void module_imserver_init(module_manager_t manager){
 	pthread_mutex_init(&module_imserver_instance->lock,NULL);
 	pthread_cond_init(&module_imserver_instance->cond,NULL);
 
-	module_imserver_instance->fd = memcacheq_init(manager->config->memcacheq_server,
+	module_imserver_instance->push_fd = memcacheq_init(manager->config->memcacheq_server,
 		manager->config->memcacheq_port);
-	assert(module_imserver_instance->fd > 0);
+	assert(module_imserver_instance->push_fd > 0);
+
+	module_imserver_instance->pull_fd = memcacheq_init(manager->config->memcacheq_server,
+		manager->config->memcacheq_port);
+	assert(module_imserver_instance->pull_fd > 0);
 
 	module_imserver_instance->status = status_none;
 	module_imserver_instance->is_continue = true;
@@ -70,7 +76,7 @@ static void* pthread_run_push(void* arg){
 	// get the memcache data
 	while(imserver->is_continue){
 		int len = 0;
-		int s = memcacheq_get(imserver->fd,imserver->module_manager->config->imserver_ip,
+		int s = memcacheq_get(imserver->push_fd, imserver->module_manager->config->imserver_ip,
 			(char**)&imserver->push_buf,&len);
 		// 1 for success 
 		if(s == 1){
@@ -134,7 +140,7 @@ static void* pthread_run_pull(void* arg){
 				imserver_module->module_pull_process(imserver->pull_buf);
 			}
 			// 2. push the data to memcache cache
-			int sf = memcacheq_set(imserver->fd,imserver->module_manager->config->schat_topic,
+			int sf = memcacheq_set(imserver->pull_fd,imserver->module_manager->config->schat_topic,
 				imserver->pull_buf,s);
 			if(sf <= 0){
 				fprintf(stderr,"pthread_run_pull memcacheq set error!\n");
@@ -180,7 +186,8 @@ static void module_imserver_destory(){
 	pthread_cond_destroy(&module_imserver_instance->cond);
 
 	// close the memcache queue
-	memcacheq_close(module_imserver_instance->fd);
+	memcacheq_close(module_imserver_instance->push_fd);
+	memcacheq_close(module_imserver_instance->pull_fd);
 
 	// close push and pull socket
 	zmq_close(module_imserver_instance->push_socket);
