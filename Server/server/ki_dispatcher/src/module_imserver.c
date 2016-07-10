@@ -81,7 +81,7 @@ static void* pthread_run_push(void* arg){
 		// 1 for success 
 		if(s == 1){
 			// 1. process data
-			imserver->push_buf[s+1] = '\0';
+			imserver->push_buf[len+1] = '\0';
 			module_t imserver_module = module_imserver_instance->module;
 			if(imserver_module != NULL){
 				imserver_module->module_push_process(imserver->push_buf);
