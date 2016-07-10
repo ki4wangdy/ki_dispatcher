@@ -89,9 +89,9 @@ static void* pthread_run_push(void* arg){
 			if (imserver_module != NULL){
 				imserver_module->module_pull_process(imserver->pull_buf);
 			}
-			sf = memcacheq_set(imserver->fd, imserver->module_manager->config->imserver_ip,
-				imserver->pull_buf, s);
-			if (sf <= 0){
+			s = memcacheq_set(imserver->fd, imserver->module_manager->config->imserver_ip,
+				imserver->pull_buf, sf);
+			if (s <= 0){
 				fprintf(stderr, "pthread_run_pull memcacheq set error!\n");
 				assert(0);
 			}
