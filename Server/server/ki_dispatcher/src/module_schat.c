@@ -115,8 +115,7 @@ static void* pthread_run_push(void* arg){
 		// s for nothing , so wait
 		else if(s == 0){
 #ifdef DEBUG
-			fprintf(stderr, "[ki_dispatcher] : memcacheq_get nothing and will wait in schat's pthread_run_push \n",
-				imserver->push_buf);
+			fprintf(stderr, "[ki_dispatcher] : memcacheq_get nothing and will wait in schat's pthread_run_push \n");
 #endif
 			pthread_mutex_lock(&imserver->lock);
 			pthread_cond_wait(&imserver->cond,&imserver->lock);
