@@ -46,11 +46,10 @@ static void module_imserver_init(module_manager_t manager){
 
 	module_imserver_instance->push_fd = memcacheq_init(manager->config->memcacheq_server,
 		manager->config->memcacheq_port);
-	assert(module_imserver_instance->push_fd > 0);
+	ki_log(module_imserver_instance->push_fd <= 0, "[ki_dispatcher] : memcacheq_init in imserver module init procedure failed!\n");
 
 	module_imserver_instance->pull_fd = memcacheq_init(manager->config->memcacheq_server,
 		manager->config->memcacheq_port);
-	assert(module_imserver_instance->pull_fd > 0);
 
 	module_imserver_instance->status = status_none;
 	module_imserver_instance->is_continue = true;
@@ -162,11 +161,11 @@ static void module_imserver_start(){
 	int s = 0;
 	pthread_t pull_pthread;
 	s = pthread_create(&pull_pthread,NULL,pthread_run_pull,NULL);
-	assert(s == 0);
+	ki_log(s != 0, "[ki_dispatcher] : module_imserver_start failed because of pthread_run_pull pthread \n");
 
 	pthread_t push_pthread;
 	s = pthread_create(&push_pthread,NULL,pthread_run_push,NULL);
-	assert(s == 0);
+	ki_log(s != 0, "[ki_dispatcher] : module_imserver_start failed because of pthread_run_push pthread \n");
 
 }
 

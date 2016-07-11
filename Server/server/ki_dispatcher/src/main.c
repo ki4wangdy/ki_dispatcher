@@ -18,7 +18,6 @@ int main(int argc, char** argv){
 
 	// start all module 
 	module_manager_start_all(manager);
-	ki_print("[ki_dispatcher] : start all modules over !\n");
 
 	// main thread to sleep one year
 	while(1){

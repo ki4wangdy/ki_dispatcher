@@ -17,7 +17,7 @@ int memcacheq_init(char* server, int port){
 	portnumber = port;
 
 	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1){
-		fprintf(stderr, "Socket Error:%s\a\n", strerror(errno));
+		ki_log(sockfd == -1, "[ki_dispatcher] : memcacheq init socket failed! %s\a\n", strerror(errno));
 		return 0;
 	}
 	
@@ -27,7 +27,7 @@ int memcacheq_init(char* server, int port){
 	server_addr.sin_addr = *((struct in_addr *)host->h_addr);
 	
 	if (connect(sockfd, (struct sockaddr *)(&server_addr), sizeof(struct sockaddr)) == -1){
-		fprintf(stderr, "Connect Error:%s\a\n", strerror(errno));
+		ki_log(true, "[ki_dispatcher] : memcacheq init connect failed! %s\a\n", strerror(errno));
 		return 0;
 	 }
 	return sockfd;
@@ -42,6 +42,7 @@ int memcacheq_set(int fd, char* topic, char* value, int value_len){
 	int nbytes = 0;
 	if (fd == 0){
 		st = -1;
+		ki_log(fd == 0, "[ki_dispatcher] : memcacheq_set fd == 0! \n");
 		goto end;
 	}
 
@@ -52,15 +53,16 @@ int memcacheq_set(int fd, char* topic, char* value, int value_len){
 	int s = write(fd, buf, len);
 	if (s <= 0){
 		st = -1;
+		ki_log(s <= 0, "[ki_dispatcher] : memcacheq_set write failed!\n");
 		goto end;
 	}
-	assert(s == len);
 
 	if ((nbytes = read(fd, buf, 100)) == -1){
-		fprintf(stderr, "Read Error:%s\n", strerror(errno));
+		ki_log(s <= 0, "[ki_dispatcher] : memcacheq_set read failed! %s\n",strerror(errno));
 		st = -1;
 		goto end;
 	}
+
 	buf[nbytes] = '\0';
 	if (strstr(buf,"STORED") != 0){
 		st = 1;
@@ -80,6 +82,7 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 	int nbytes = 0;
 	if (fd == 0){
 		st = -1;
+		ki_log(fd == 0, "[ki_dispatcher] : memcacheq_get fd == 0! \n");
 		goto end;
 	}
 
@@ -94,7 +97,7 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 	}
 	assert(s == temp_len);
 	if ((nbytes = read(fd, buf, 1024 * 512)) == -1){
-		fprintf(stderr, "Read Error:%s\n", strerror(errno));
+		ki_log(s <= 0, "[ki_dispatcher] : memcacheq_get read failed!\n");
 		st = -1;
 		goto end;
 	}
