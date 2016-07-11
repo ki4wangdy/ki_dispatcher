@@ -57,16 +57,24 @@ static void* pthread_run_push(void* arg){
 
 	module_schat_t imserver = (module_schat_t)module_schat_instance;
 	imserver->push_socket = zmq_socket(imserver->module_manager->zmq_context,ZMQ_REQ);
-	zmq_connect(imserver->push_socket,imserver->module_manager->config->schat_push_ip_addr);
+	int temps = zmq_connect(imserver->push_socket,imserver->module_manager->config->schat_push_ip_addr);
+	ki_log(temps != 0, "[ki_dispatcher] : zmq_connect failed in schat's pthread_run_push thread!\n");
 
 	char temp[50] = ""; 
 	// get the memcache data
 	while(imserver->is_continue){
 		int len = 0;
+#ifdef DEBUG
+		fprintf(stderr, "[ki_dispatcher] : memcacheq_get start in schat's pthread_run_push \n");
+#endif
 		int s = memcacheq_get(imserver->fd,imserver->module_manager->config->schat_topic,
 			(char**)&imserver->push_buf,&len);
 		// 1 for success 
 		if(s == 1){
+#ifdef DEBUG
+			fprintf(stderr, "[ki_dispatcher] : memcacheq_get success the data:%s in schat's pthread_run_push \n",
+				imserver->push_buf);
+#endif
 			// 1. process data
 			imserver->push_buf[len+1] = '\0';
 			module_t imserver_module = module_schat_instance->module;
@@ -76,13 +84,11 @@ static void* pthread_run_push(void* arg){
 			// 2. push the data to zmq
 			int fs = zmq_send(imserver->push_socket,imserver->push_buf,len,0);
 			if(fs != len){
-				fprintf(stderr,"pthread_run_push push data is error!\n");
-				assert(0);
+				ki_log(fs != len, "zmq_send failed fs != len in schat's pthread_run_push pthread!\n");
 			}
 			int sf = zmq_recv(imserver->push_socket, imserver->pull_buf, schat_buf_size, 0);
 			if(sf <= 0){
-				fprintf(stdout,"pthread_run_push pull data is error!\n");
-				assert(0);
+				ki_log(sf <= 0, "zmq_recv failed sf <= 0 in schat's pthread_run_push pthread!\n");
 			}
 			// 3. get the data and push to memcacheq 
 			imserver->pull_buf[sf + 1] = '\0';
@@ -92,8 +98,7 @@ static void* pthread_run_push(void* arg){
 			s = memcacheq_set(imserver->fd, imserver->module_manager->config->imserver_ip,
 				imserver->pull_buf, sf);
 			if (s <= 0){
-				fprintf(stderr, "pthread_run_pull memcacheq set error!\n");
-				assert(0);
+				ki_log(s <= 0, "memcacheq_set failed s <= 0 in schat's pthread_run_push pthread!\n");
 			}
 			// 4.notify other module to get data from memcache queue
 			module_manager_notify(imserver->module_manager, module_flag_imserver);
