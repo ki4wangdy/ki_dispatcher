@@ -33,6 +33,7 @@
 #include "chash.h"
 #include "memcacheq.h"
 #include "config.h"
+#include "log.h"
 
 #include "module.h"
 #include "module_manager.h"
