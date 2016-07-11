@@ -21,7 +21,6 @@ int main(int argc, char** argv){
 
 	// main thread to sleep one year
 	while(1){
-		ki_print("[ki_dispatcher] : main pthread start to sleep !\n");
 		// just sleep some time
 		sleep(60*60*24*365);
 	}
