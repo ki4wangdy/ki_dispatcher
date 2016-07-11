@@ -58,7 +58,7 @@ int memcacheq_set(int fd, char* topic, char* value, int value_len){
 	}
 
 	if ((nbytes = read(fd, buf, 100)) == -1){
-		ki_log(s <= 0, "[ki_dispatcher] : memcacheq_set read failed!\n",);
+		ki_log(s <= 0, "[ki_dispatcher] : memcacheq_set read failed!\n");
 		st = -1;
 		goto end;
 	}
