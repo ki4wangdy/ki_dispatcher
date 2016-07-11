@@ -58,12 +58,14 @@ void module_manager_start_all(module_manager_t manager){
 	module_t imserver_module = (module_t)hash_table_get(manager->hash,module_flag_imserver);
 	if(imserver_module != NULL){
 		imserver_module->module_start();
+		ki_print("[ki_dispatcher] : imserver module start!\n");
 	}
 
 	// 2. start the schat module
 	module_t schat_module = (module_t)hash_table_get(manager->hash,module_flag_single_chat);
 	if(schat_module != NULL){
 		schat_module->module_start();
+		ki_print("[ki_dispatcher] : schat module start!\n");
 	}
 	
 }
