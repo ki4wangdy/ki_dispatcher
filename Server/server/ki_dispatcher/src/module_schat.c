@@ -58,22 +58,23 @@ static void* pthread_run_push(void* arg){
 	module_schat_t imserver = (module_schat_t)module_schat_instance;
 	imserver->push_socket = zmq_socket(imserver->module_manager->zmq_context,ZMQ_REQ);
 	int temps = zmq_connect(imserver->push_socket,imserver->module_manager->config->schat_push_ip_addr);
-	ki_log(temps != 0, "[ki_dispatcher] : zmq_connect failed in schat's pthread_run_push thread!\n");
+	ki_log(temps != 0, "[ki_dispatcher] : schat thread connect zmq failed!\n");
 
 	char temp[50] = ""; 
 	// get the memcache data
 	while(imserver->is_continue){
 		int len = 0;
 #ifdef DEBUG
-		fprintf(stderr, "[ki_dispatcher] : memcacheq_get start in schat's pthread_run_push \n");
+		fprintf(stderr, "[ki_dispatcher] : schat thread start to get the topic:%s msg from memcacheq \n",
+			imserver->module_manager->config->schat_topic);
 #endif
 		int s = memcacheq_get(imserver->fd,imserver->module_manager->config->schat_topic,
 			(char**)&imserver->push_buf,&len);
 		// 1 for success 
 		if(s == 1){
 #ifdef DEBUG
-			fprintf(stderr, "[ki_dispatcher] : memcacheq_get success the data:%s in schat's pthread_run_push \n",
-				imserver->push_buf);
+			fprintf(stderr, "[ki_dispatcher] : schat thread get the topic:%s msg from memcacheq success, the data:%s\n",
+				imserver->module_manager->config->schat_topic,imserver->push_buf);
 #endif
 			// 1. process data
 			imserver->push_buf[len+1] = '\0';
@@ -95,11 +96,19 @@ static void* pthread_run_push(void* arg){
 			if (imserver_module != NULL){
 				imserver_module->module_pull_process(imserver->pull_buf);
 			}
+#ifdef DEBUG
+			fprintf(stderr, "[ki_dispatcher] : schat thread start to set the topic:%s msg to memcacheq , the data:%s\n",
+				imserver->module_manager->config->imserver_ip,imserver->pull_buf);
+#endif
 			s = memcacheq_set(imserver->fd, imserver->module_manager->config->imserver_ip,
 				imserver->pull_buf, sf);
 			if (s <= 0){
 				ki_log(s <= 0, "memcacheq_set failed s <= 0 in schat's pthread_run_push pthread!\n");
 			}
+#ifdef DEBUG
+			fprintf(stderr, "[ki_dispatcher] : schat thread set the topic:%s msg to memcacheq success\n",
+				imserver->module_manager->config->imserver_ip);
+#endif
 			// 4.notify other module to get data from memcache queue
 			module_manager_notify(imserver->module_manager, module_flag_imserver);
 		} 
