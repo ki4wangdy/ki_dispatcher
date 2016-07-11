@@ -157,7 +157,7 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 	*value = result;
 
 #ifdef DEBUG
-	fprintf(stderr, "[ki_dispatcher] : memcacheq_get sucess\n", buf);
+	fprintf(stderr, "[ki_dispatcher] : memcacheq_get sucess\n");
 #endif
 
 end:
