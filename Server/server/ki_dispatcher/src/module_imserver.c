@@ -70,21 +70,21 @@ static void* pthread_run_push(void* arg){
 	module_imserver_t imserver = (module_imserver_t)module_imserver_instance;
 	imserver->push_socket = zmq_socket(imserver->module_manager->zmq_context,ZMQ_REQ);
 	int sf = zmq_connect(imserver->push_socket,imserver->module_manager->config->imserver_push_ip_addr);
-	ki_log(sf != 0, "[ki_dispatcher] : zmq_connect failed in pthread_run_push thread!\n");
+	ki_log(sf != 0, "[ki_dispatcher] : zmq_connect failed in imserver's pthread_run_push thread!\n");
 	
 	char temp[50] = ""; 
 	// get the memcache data
 	while(imserver->is_continue){
 		int len = 0;
 #ifdef DEBUG
-		fprintf(stderr, "[ki_dispatcher] : memcacheq_get start in pthread_run_push \n");
+		fprintf(stderr, "[ki_dispatcher] : memcacheq_get start in imserver's pthread_run_push \n");
 #endif
 		int s = memcacheq_get(imserver->push_fd, imserver->module_manager->config->imserver_ip,
 			(char**)&imserver->push_buf,&len);
 		// 1 for success 
 		if(s == 1){
 #ifdef DEBUG
-			fprintf(stderr, "[ki_dispatcher] : memcacheq_get success the data:%s in pthread_run_push \n",
+			fprintf(stderr, "[ki_dispatcher] : memcacheq_get success the data:%s in imserver's pthread_run_push \n",
 				imserver->push_buf);
 #endif
 			// 1. process data
@@ -98,17 +98,17 @@ static void* pthread_run_push(void* arg){
 			r_free(imserver->push_buf);
 			imserver->push_buf = NULL;
 			if(fs != len){
-				ki_log(fs != len, "[ki_dispatcher] : zmq_send failed in pthread_run_push!\n");
+				ki_log(fs != len, "[ki_dispatcher] : zmq_send failed in imserver's pthread_run_push!\n");
 			}
 			int sf = zmq_recv(imserver->push_socket, imserver->pull_buf, imserver_buf_size, 0);
 			if(sf <= 0){
-				ki_log(sf <= 0, "[ki_dispatcher] : zmq_recv failed in pthread_run_push!\n");
+				ki_log(sf <= 0, "[ki_dispatcher] : zmq_recv failed in imserver's pthread_run_push!\n");
 			}
 		} 
 		// s for nothing , so wait
 		else if(s == 0){
 #ifdef DEBUG
-			fprintf(stderr, "[ki_dispatcher] : memcacheq_get nothing and will wait in pthread_run_push \n");
+			fprintf(stderr, "[ki_dispatcher] : memcacheq_get nothing and will wait in imserver's pthread_run_push \n");
 #endif
 			pthread_mutex_lock(&imserver->lock);
 			pthread_cond_wait(&imserver->cond,&imserver->lock);
@@ -116,7 +116,7 @@ static void* pthread_run_push(void* arg){
 		} 
 		// error to assert
 		else {
-			ki_log(true, "memcacheq_get data is error in pthread_run_push !\n");
+			ki_log(true, "memcacheq_get data is error in imserver's pthread_run_push !\n");
 		}
 	}
 
@@ -129,7 +129,7 @@ static void* pthread_run_pull(void* arg){
 	module_imserver_t imserver = (module_imserver_t)module_imserver_instance;
 	imserver->pull_socket = zmq_socket(imserver->module_manager->zmq_context,ZMQ_REP);
 	int sf = zmq_connect(imserver->pull_socket,imserver->module_manager->config->imserver_pull_ip_addr);
-	ki_log(sf != 0, "[ki_dispatcher] : zmq_connect failed in pthread_run_pull thread!\n");
+	ki_log(sf != 0, "[ki_dispatcher] : zmq_connect failed in imserver's pthread_run_pull thread!\n");
 
 	int32_t s = 0;
 	char buf[] = "ack";
@@ -137,7 +137,7 @@ static void* pthread_run_pull(void* arg){
 		s = zmq_recv(imserver->pull_socket,imserver->pull_buf,imserver_buf_size,0);
 		zmq_send(imserver->pull_socket,buf,strlen(buf),0);
 		if(s >= imserver_buf_size){
-			ki_log(s >= imserver_buf_size, "zmq_recv's buf is so big in pthread_run_pull! \n");
+			ki_log(s >= imserver_buf_size, "zmq_recv's buf is so big in imserver's pthread_run_pull! \n");
 		}
 		if(s > 0){
 			// 1.pull the data and process
@@ -150,13 +150,13 @@ static void* pthread_run_pull(void* arg){
 			int sf = memcacheq_set(imserver->pull_fd,imserver->module_manager->config->schat_topic,
 				imserver->pull_buf,s);
 			if(sf <= 0){
-				ki_log(sf <= 0, "[ki_dispatcher] : memcacheq set failed sf <= 0 in pthread_run_pull!\n");
+				ki_log(sf <= 0, "[ki_dispatcher] : memcacheq set failed sf <= 0 in imserver's pthread_run_pull!\n");
 			}
 			// 3.notify other module to get data from memcache queue
 			module_manager_notify(imserver->module_manager,module_flag_single_chat);
 			continue;
 		}
-		ki_log(s >= imserver_buf_size, "zmq pull's size is <= 0 in pthread_run_pull! \n");
+		ki_log(s >= imserver_buf_size, "zmq pull's size is <= 0 in imserver's pthread_run_pull! \n");
 	}
 
 	pthread_detach(pthread_self());
@@ -168,11 +168,11 @@ static void module_imserver_start(){
 	int s = 0;
 	pthread_t pull_pthread;
 	s = pthread_create(&pull_pthread,NULL,pthread_run_pull,NULL);
-	ki_log(s != 0, "[ki_dispatcher] : module_imserver_start failed because of pthread_run_pull pthread \n");
+	ki_log(s != 0, "[ki_dispatcher] : module_imserver_start failed because of imserver's pthread_run_pull pthread \n");
 
 	pthread_t push_pthread;
 	s = pthread_create(&push_pthread,NULL,pthread_run_push,NULL);
-	ki_log(s != 0, "[ki_dispatcher] : module_imserver_start failed because of pthread_run_push pthread \n");
+	ki_log(s != 0, "[ki_dispatcher] : module_imserver_start failed because of imserver's pthread_run_push pthread \n");
 
 }
 
