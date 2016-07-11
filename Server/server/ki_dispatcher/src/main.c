@@ -6,8 +6,7 @@ int main(int argc, char** argv){
 	// init the process , start another process
 	int result = init_daemon();
 	if (!result){
-		fprintf(stderr, "init_daemon is error!\n");
-		assert(0);
+		ki_log("[ki_dispatcher] : init_daemon is error!\n");
 	}
 
 	// init the config
