@@ -57,6 +57,11 @@ int memcacheq_set(int fd, char* topic, char* value, int value_len){
 		goto end;
 	}
 
+#ifdef DEBUG
+	buf[s + 1] = '\0';
+	fprintf(stderr,"[ki_dispatcher] : memcacheq_set write %s\n",buf);
+#endif
+
 	if ((nbytes = read(fd, buf, 100)) == -1){
 		ki_log(s <= 0, "[ki_dispatcher] : memcacheq_set read failed!\n");
 		st = -1;
@@ -66,6 +71,9 @@ int memcacheq_set(int fd, char* topic, char* value, int value_len){
 	buf[nbytes] = '\0';
 	if (strstr(buf,"STORED") != 0){
 		st = 1;
+#ifdef DEBUG
+		fprintf(stderr, "[ki_dispatcher] : memcacheq_set write result:%s\n\n", buf);
+#endif
 	}
 
 end:
