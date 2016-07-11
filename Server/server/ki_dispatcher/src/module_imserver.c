@@ -116,8 +116,7 @@ static void* pthread_run_push(void* arg){
 		} 
 		// error to assert
 		else {
-			fprintf(stderr,"memcacheq pull data is error !\n");
-			assert(0);
+			ki_log(true, "memcacheq_get data is error in pthread_run_push !\n");
 		}
 	}
 
@@ -130,7 +129,7 @@ static void* pthread_run_pull(void* arg){
 	module_imserver_t imserver = (module_imserver_t)module_imserver_instance;
 	imserver->pull_socket = zmq_socket(imserver->module_manager->zmq_context,ZMQ_REP);
 	int sf = zmq_connect(imserver->pull_socket,imserver->module_manager->config->imserver_pull_ip_addr);
-	ki_log(sf != 0, "[ki_dispatcher] : zmq_connect failed in pthread_run_push thread!\n");
+	ki_log(sf != 0, "[ki_dispatcher] : zmq_connect failed in pthread_run_pull thread!\n");
 
 	int32_t s = 0;
 	char buf[] = "ack";
@@ -138,8 +137,7 @@ static void* pthread_run_pull(void* arg){
 		s = zmq_recv(imserver->pull_socket,imserver->pull_buf,imserver_buf_size,0);
 		zmq_send(imserver->pull_socket,buf,strlen(buf),0);
 		if(s >= imserver_buf_size){
-			fprintf(stderr,"error to pull, the size is so big ! \n");
-			assert(0);
+			ki_log(s >= imserver_buf_size, "zmq_recv's buf is so big in pthread_run_pull! \n");
 		}
 		if(s > 0){
 			// 1.pull the data and process
@@ -152,14 +150,13 @@ static void* pthread_run_pull(void* arg){
 			int sf = memcacheq_set(imserver->pull_fd,imserver->module_manager->config->schat_topic,
 				imserver->pull_buf,s);
 			if(sf <= 0){
-				fprintf(stderr,"pthread_run_pull memcacheq set error!\n");
-				assert(0);
+				ki_log(fs != len, "[ki_dispatcher] : memcacheq set failed sf <= 0 in pthread_run_pull!\n");
 			}
 			// 3.notify other module to get data from memcache queue
 			module_manager_notify(imserver->module_manager,module_flag_single_chat);
 			continue;
 		}
-		fprintf(stderr,"zmq pull's size is <= 0 ! \n");
+		ki_log(s >= imserver_buf_size, "zmq pull's size is <= 0 in pthread_run_pull! \n");
 	}
 
 	pthread_detach(pthread_self());
