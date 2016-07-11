@@ -70,22 +70,23 @@ static void* pthread_run_push(void* arg){
 	module_imserver_t imserver = (module_imserver_t)module_imserver_instance;
 	imserver->push_socket = zmq_socket(imserver->module_manager->zmq_context,ZMQ_REQ);
 	int sf = zmq_connect(imserver->push_socket,imserver->module_manager->config->imserver_push_ip_addr);
-	ki_log(sf != 0, "[ki_dispatcher] : zmq_connect failed in imserver's pthread_run_push thread!\n");
+	ki_log(sf != 0, "[ki_dispatcher] : imserver pull queue thread fail to connect zmq_socket!\n");
 	
 	char temp[50] = ""; 
 	// get the memcache data
 	while(imserver->is_continue){
 		int len = 0;
 #ifdef DEBUG
-		fprintf(stderr, "[ki_dispatcher] : memcacheq_get start in imserver's pthread_run_push \n");
+		fprintf(stderr, "[ki_dispatcher] : imserver thread start to get the topic:%s msg from memcacheq in imserver pull queue thread\n",
+			imserver->module_manager->config->imserver_ip);
 #endif
 		int s = memcacheq_get(imserver->push_fd, imserver->module_manager->config->imserver_ip,
 			(char**)&imserver->push_buf,&len);
 		// 1 for success 
 		if(s == 1){
 #ifdef DEBUG
-			fprintf(stderr, "[ki_dispatcher] : memcacheq_get success the data:%s in imserver's pthread_run_push \n",
-				imserver->push_buf);
+			fprintf(stderr, "[ki_dispatcher] : imserver thread get topic:%s success in imserver pull queue thread , the data:%s\n",
+				imserver->module_manager->config->imserver_ip,imserver->push_buf);
 #endif
 			// 1. process data
 			imserver->push_buf[len+1] = '\0';
@@ -108,7 +109,8 @@ static void* pthread_run_push(void* arg){
 		// s for nothing , so wait
 		else if(s == 0){
 #ifdef DEBUG
-			fprintf(stderr, "[ki_dispatcher] : memcacheq_get nothing and will wait in imserver's pthread_run_push \n");
+			fprintf(stderr, "[ki_dispatcher] : imserver thread get topic:%s noting and will wait in imserver pull queue thread\n",
+				imserver->module_manager->config->imserver_ip);
 #endif
 			pthread_mutex_lock(&imserver->lock);
 			pthread_cond_wait(&imserver->cond,&imserver->lock);
@@ -129,7 +131,7 @@ static void* pthread_run_pull(void* arg){
 	module_imserver_t imserver = (module_imserver_t)module_imserver_instance;
 	imserver->pull_socket = zmq_socket(imserver->module_manager->zmq_context,ZMQ_REP);
 	int sf = zmq_connect(imserver->pull_socket,imserver->module_manager->config->imserver_pull_ip_addr);
-	ki_log(sf != 0, "[ki_dispatcher] : zmq_connect failed in imserver's pthread_run_pull thread!\n");
+	ki_log(sf != 0, "[ki_dispatcher] : imserver push queue thread fail to connect zmq_socket!\n");
 
 	int32_t s = 0;
 	char buf[] = "ack";
@@ -146,12 +148,20 @@ static void* pthread_run_pull(void* arg){
 			if(imserver_module != NULL){
 				imserver_module->module_pull_process(imserver->pull_buf);
 			}
+#ifdef DEBUG
+			fprintf(stderr, "[ki_dispatcher] : imserver thread start to set the topic:%s msg to memcacheq in imserver push queue thread\n",
+				imserver->module_manager->config->schat_topic);
+#endif
 			// 2. push the data to memcache cache
 			int sf = memcacheq_set(imserver->pull_fd,imserver->module_manager->config->schat_topic,
 				imserver->pull_buf,s);
 			if(sf <= 0){
 				ki_log(sf <= 0, "[ki_dispatcher] : memcacheq set failed sf <= 0 in imserver's pthread_run_pull!\n");
 			}
+#ifdef DEBUG
+			fprintf(stderr, "[ki_dispatcher] : imserver thread set the topic:%s msg success in imserver push queue thread\n",
+				imserver->module_manager->config->schat_topic);
+#endif
 			// 3.notify other module to get data from memcache queue
 			module_manager_notify(imserver->module_manager,module_flag_single_chat);
 			continue;
