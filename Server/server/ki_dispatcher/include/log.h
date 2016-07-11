@@ -3,8 +3,7 @@
 
 #ifdef DEBUG
 	#define ki_print(str)	\
-		do{
-		\
+		do{	\
 		fprintf(stderr, str);	\
 		} while (0)
 #else
