@@ -58,8 +58,9 @@ int memcacheq_set(int fd, char* topic, char* value, int value_len){
 	}
 
 #ifdef DEBUG
-	buf[s + 1] = '\0';
-	fprintf(stderr,"[ki_dispatcher] : memcacheq_set write %s\n",buf);
+	if(strcmp("",buf) != 0){
+		fprintf(stderr, "[ki_dispatcher] : memcacheq_set content:%s\n",buf);
+	}
 #endif
 
 	if ((nbytes = read(fd, buf, 100)) == -1){
@@ -72,7 +73,7 @@ int memcacheq_set(int fd, char* topic, char* value, int value_len){
 	if (strstr(buf,"STORED") != 0){
 		st = 1;
 #ifdef DEBUG
-		fprintf(stderr, "[ki_dispatcher] : memcacheq_set write result:%s\n", buf);
+		fprintf(stderr, "[ki_dispatcher] : memcacheq_set success\n");
 #endif
 	}
 
@@ -107,7 +108,7 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 
 #ifdef DEBUG
 	buf[s + 1] = '\0';
-	fprintf(stderr, "[ki_dispatcher] : memcacheq_get write %s\n", buf);
+	fprintf(stderr, "[ki_dispatcher] : memcacheq_get content:%s\n", buf);
 #endif
 
 	if ((nbytes = read(fd, buf, 1024 * 512)) == -1){
@@ -117,10 +118,6 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 	}
 
 	buf[nbytes] = '\0';
-
-#ifdef DEBUG
-	fprintf(stderr, "[ki_dispatcher] : memcacheq_get read result:%s\n", buf);
-#endif
 
 	char r[] = "END\r\n";
 	if (memcmp(buf,r,sizeof(r)-1) == 0){
@@ -158,6 +155,10 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 	char* result = calloc(1, size);
 	memcpy(result, temps, size);
 	*value = result;
+
+#ifdef DEBUG
+	fprintf(stderr, "[ki_dispatcher] : memcacheq_get sucess\n", buf);
+#endif
 
 end:
 //	pthread_mutex_unlock(&lock);
