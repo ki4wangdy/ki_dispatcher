@@ -101,18 +101,31 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 	int s = write(fd, buf, temp_len);
 	if (s <= 0){
 		st = -1;
+		ki_log(s <= 0, "[ki_dispatcher] : memcacheq_get write failed!\n");
 		goto end;
 	}
-	assert(s == temp_len);
+
+#ifdef DEBUG
+	buf[s + 1] = '\0';
+	fprintf(stderr, "[ki_dispatcher] : memcacheq_get write %s\n", buf);
+#endif
+
 	if ((nbytes = read(fd, buf, 1024 * 512)) == -1){
-		ki_log(s <= 0, "[ki_dispatcher] : memcacheq_get read failed!\n");
 		st = -1;
+		ki_log(s <= 0, "[ki_dispatcher] : memcacheq_get read failed! because of (nbytes = read(fd, buf, 1024 * 512)) == -1 \n");
 		goto end;
 	}
+
 	buf[nbytes] = '\0';
+
+#ifdef DEBUG
+	fprintf(stderr, "[ki_dispatcher] : memcacheq_get read result:%s\n\n", buf);
+#endif
+
 	char r[] = "END\r\n";
 	if (memcmp(buf,r,sizeof(r)-1) == 0){
 		st = 0;
+		ki_log(s <= 0, "[ki_dispatcher] : memcacheq_get read failed! because of memcmp(buf,r,sizeof(r)-1) == 0 \n");
 		goto end;
 	}
 
@@ -121,6 +134,7 @@ int memcacheq_get(int fd, char* topic, char** value, int* len){
 	int prefix_size = strlen(prefix);
 	if (nbytes <= prefix_size){
 		st = -1;
+		ki_log(s <= 0, "[ki_dispatcher] : memcacheq_get read failed! because of nbytes <= prefix_size \n");
 		goto end;
 	}
 
