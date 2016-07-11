@@ -115,7 +115,8 @@ static void* pthread_run_push(void* arg){
 		// s for nothing , so wait
 		else if(s == 0){
 #ifdef DEBUG
-			fprintf(stderr, "[ki_dispatcher] : memcacheq_get nothing and will wait in schat's pthread_run_push \n");
+			fprintf(stderr, "[ki_dispatcher] : schat thread get the topic:%s nothing and will wait\n",
+				imserver->module_manager->config->schat_topic);
 #endif
 			pthread_mutex_lock(&imserver->lock);
 			pthread_cond_wait(&imserver->cond,&imserver->lock);
