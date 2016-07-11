@@ -69,16 +69,24 @@ static void module_imserver_push_process(int8_t* data){
 static void* pthread_run_push(void* arg){
 	module_imserver_t imserver = (module_imserver_t)module_imserver_instance;
 	imserver->push_socket = zmq_socket(imserver->module_manager->zmq_context,ZMQ_REQ);
-	zmq_connect(imserver->push_socket,imserver->module_manager->config->imserver_push_ip_addr);
+	int sf = zmq_connect(imserver->push_socket,imserver->module_manager->config->imserver_push_ip_addr);
+	ki_log(sf != 0, "[ki_dispatcher] : zmq_connect failed in pthread_run_push thread!\n");
 	
 	char temp[50] = ""; 
 	// get the memcache data
 	while(imserver->is_continue){
 		int len = 0;
+#ifdef DEBUG
+		fprintf(stderr, "[ki_dispatcher] : memcacheq_get start in pthread_run_push \n");
+#endif
 		int s = memcacheq_get(imserver->push_fd, imserver->module_manager->config->imserver_ip,
 			(char**)&imserver->push_buf,&len);
 		// 1 for success 
 		if(s == 1){
+#ifdef DEBUG
+			fprintf(stderr, "[ki_dispatcher] : memcacheq_get success the data:%s in pthread_run_push \n",
+				imserver->push_buf);
+#endif
 			// 1. process data
 			imserver->push_buf[len+1] = '\0';
 			module_t imserver_module = module_imserver_instance->module;
@@ -90,17 +98,18 @@ static void* pthread_run_push(void* arg){
 			r_free(imserver->push_buf);
 			imserver->push_buf = NULL;
 			if(fs != len){
-				fprintf(stderr,"pthread_run_push push data is error!\n");
-				assert(0);
+				ki_log(fs != len, "[ki_dispatcher] : zmq_send failed in pthread_run_push!\n");
 			}
 			int sf = zmq_recv(imserver->push_socket, imserver->pull_buf, imserver_buf_size, 0);
 			if(sf <= 0){
-				fprintf(stdout,"pthread_run_push pull data is error!\n");
-				assert(0);
+				ki_log(sf <= 0, "[ki_dispatcher] : zmq_recv failed in pthread_run_push!\n");
 			}
 		} 
 		// s for nothing , so wait
 		else if(s == 0){
+#ifdef DEBUG
+			fprintf(stderr, "[ki_dispatcher] : memcacheq_get nothing and will wait in pthread_run_push \n");
+#endif
 			pthread_mutex_lock(&imserver->lock);
 			pthread_cond_wait(&imserver->cond,&imserver->lock);
 			pthread_mutex_unlock(&imserver->lock);
@@ -120,7 +129,8 @@ static void* pthread_run_pull(void* arg){
 
 	module_imserver_t imserver = (module_imserver_t)module_imserver_instance;
 	imserver->pull_socket = zmq_socket(imserver->module_manager->zmq_context,ZMQ_REP);
-	zmq_connect(imserver->pull_socket,imserver->module_manager->config->imserver_pull_ip_addr);
+	int sf = zmq_connect(imserver->pull_socket,imserver->module_manager->config->imserver_pull_ip_addr);
+	ki_log(sf != 0, "[ki_dispatcher] : zmq_connect failed in pthread_run_push thread!\n");
 
 	int32_t s = 0;
 	char buf[] = "ack";
