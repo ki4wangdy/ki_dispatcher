@@ -17,7 +17,7 @@ int memcacheq_init(char* server, int port){
 	portnumber = port;
 
 	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1){
-		ki_log(sockfd == -1, "[ki_dispatcher] : memcacheq init socket failed! %s\a\n", strerror(errno));
+		ki_log(sockfd == -1, "[ki_dispatcher] : memcacheq init socket failed!\n");
 		return 0;
 	}
 	
@@ -27,7 +27,7 @@ int memcacheq_init(char* server, int port){
 	server_addr.sin_addr = *((struct in_addr *)host->h_addr);
 	
 	if (connect(sockfd, (struct sockaddr *)(&server_addr), sizeof(struct sockaddr)) == -1){
-		ki_log(true, "[ki_dispatcher] : memcacheq init connect failed! %s\a\n", strerror(errno));
+		ki_log(true, "[ki_dispatcher] : memcacheq init connect failed!\n");
 		return 0;
 	 }
 	return sockfd;
@@ -58,7 +58,7 @@ int memcacheq_set(int fd, char* topic, char* value, int value_len){
 	}
 
 	if ((nbytes = read(fd, buf, 100)) == -1){
-		ki_log(s <= 0, "[ki_dispatcher] : memcacheq_set read failed! %s\n",strerror(errno));
+		ki_log(s <= 0, "[ki_dispatcher] : memcacheq_set read failed!\n",);
 		st = -1;
 		goto end;
 	}
