@@ -4,7 +4,7 @@
 #ifdef DEBUG
 	#define ki_print(str)	\
 		do{	\
-		fprintf(stderr, str);	\
+		fprintf(stderr, #str);	\
 		} while (0)
 #else
 	#define ki_print(str)	
