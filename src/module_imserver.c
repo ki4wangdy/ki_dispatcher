@@ -150,7 +150,7 @@ static void* pthread_run_pull(void* arg){
 			int sf = memcacheq_set(imserver->pull_fd,imserver->module_manager->config->schat_topic,
 				imserver->pull_buf,s);
 			if(sf <= 0){
-				ki_log(fs != len, "[ki_dispatcher] : memcacheq set failed sf <= 0 in pthread_run_pull!\n");
+				ki_log(sf <= 0, "[ki_dispatcher] : memcacheq set failed sf <= 0 in pthread_run_pull!\n");
 			}
 			// 3.notify other module to get data from memcache queue
 			module_manager_notify(imserver->module_manager,module_flag_single_chat);
