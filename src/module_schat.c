@@ -43,7 +43,7 @@ static void module_schat_init(module_manager_t manager){
 
 	module_schat_instance->fd = memcacheq_init(manager->config->memcacheq_server,
 		manager->config->memcacheq_port);
-	assert(module_schat_instance->fd > 0);
+	ki_log(module_schat_instance->fd <= 0, "[ki_dispatcher] : memcacheq_init in schat module init procedure failed!\n");
 
 	module_schat_instance->status = status_none;
 	module_schat_instance->is_continue = true;
@@ -119,7 +119,7 @@ static void module_schat_start(){
 	int s = 0;
 	pthread_t push_pthread;
 	s = pthread_create(&push_pthread,NULL,pthread_run_push,NULL);
-	assert(s == 0);
+	ki_log(s != 0, "[ki_dispatcher] : module_schat_start failed because of schat's pthread_run_push pthread \n");
 }
 
 static void module_schat_notify(){
