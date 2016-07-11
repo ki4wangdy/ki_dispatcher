@@ -14,7 +14,7 @@ int main(int argc, char** argv){
 	// init the modules
 	module_manager_t manager = module_manager_init(t);
 	module_inits(manager);
-	ki_print("[ki_dispatcher] : init module over !\n");
+	ki_print("[ki_dispatcher] : init thread over !\n");
 
 	// start all module 
 	module_manager_start_all(manager);
